@@ -1,12 +1,14 @@
 name: blocx
-description: A sample command-line application.
+description: A CLI tool to generate BLoC + Clean Architecture boilerplate.
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/RahulDev-flutter/blocx_cli
 
 environment:
   sdk: ^3.9.0
 
-# Add regular dependencies here.
+executables:
+  blocx: bin/blocx.dart
+
 dependencies:
   path: ^1.9.1
   args: ^2.7.0
