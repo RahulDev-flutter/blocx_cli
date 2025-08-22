@@ -62,7 +62,8 @@ Future<void> createOrUpdateProject(String name) async {
       }
       print('✅ Flutter project "$name" created successfully.');
     } else {
-      final shouldContinue = prompts.confirm('📁 Project "$name" already exists. Continue to enhance it?');
+      print('📁 Project "$name" already exists.');
+      final shouldContinue = prompts.getBool('Continue to enhance it?', defaultsTo: true);
       if (!shouldContinue) {
         print('Operation cancelled.');
         exit(0);
@@ -72,11 +73,11 @@ Future<void> createOrUpdateProject(String name) async {
     print('\n🛠️  Setting up project architecture...');
 
     // Step 1: Ask which API client
-    final String apiChoice = prompts.choose(
-      '👉 Which API package do you want to use?',
-      ['http', 'dio'],
-      defaultsTo: 'dio',
-    );
+    print('👉 Which API package do you want to use?');
+    print('1. dio (Recommended)');
+    print('2. http');
+    final choice = prompts.get('Enter your choice (1 or 2)', defaultsTo: '1');
+    final String apiChoice = choice == '2' ? 'http' : 'dio';
 
     // Step 2: Update pubspec.yaml with dependencies
     await _updatePubspecDependencies(projectDir.path, apiChoice);
@@ -329,9 +330,14 @@ Future<void> _createAppSetup(String projectPath) async {
   final appDir = Directory(p.join(projectPath, 'lib', 'app'));
   await appDir.create(recursive: true);
 
+  // Read the current API choice from a temporary approach - in real implementation
+  // you'd pass this as a parameter
+  final pubspecContent = await File(p.join(projectPath, 'pubspec.yaml')).readAsString();
+  final isDio = pubspecContent.contains('dio:');
+
   // Create service locator
   final serviceLocator = File(p.join(appDir.path, 'service_locator.dart'));
-  await serviceLocator.writeAsString(serviceLocatorTemplate);
+  await serviceLocator.writeAsString(serviceLocatorTemplate(isDio));
 
   // Create app router
   final appRouter = File(p.join(appDir.path, 'app_router.dart'));
@@ -1950,9 +1956,9 @@ class ${_capitalize(name)}Bloc extends Bloc<${_capitalize(name)}Event, ${_capita
 }
 """;
 
-const serviceLocatorTemplate = """
+String serviceLocatorTemplate(bool isDio) => """
 import 'package:get_it/get_it.dart';
-import '../core/network/dio_client.dart'; // Change to http_client.dart if using HTTP
+${isDio ? "import '../core/network/dio_client.dart';" : "import '../core/network/http_client.dart';"}
 import '../core/network/api_service.dart';
 import '../modules/auth/repository/auth_repository.dart';
 import '../modules/auth/bloc/auth_bloc.dart';
@@ -1963,7 +1969,7 @@ final GetIt sl = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
   // Core
-  sl.registerLazySingleton<DioClient>(() => DioClient()); // Change to HttpClient() if using HTTP
+  ${isDio ? "sl.registerLazySingleton<DioClient>(() => DioClient());" : "sl.registerLazySingleton<HttpClient>(() => HttpClient());"}
   sl.registerLazySingleton<ApiService>(() => ApiService(sl()));
 
   // Repositories
