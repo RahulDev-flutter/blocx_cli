@@ -141,24 +141,39 @@ Future<void> _updatePubspecDependencies(String projectPath, String apiChoice) as
   final content = await pubspecFile.readAsString();
   final lines = content.split('\n');
 
-  // Find dependencies section
+  // Find dependencies section and flutter sdk line
   int dependenciesIndex = lines.indexWhere((line) => line.trim() == 'dependencies:');
   if (dependenciesIndex == -1) {
     throw Exception('Could not find dependencies section in pubspec.yaml');
   }
 
-  // Add required dependencies
+  // Find the line with "flutter:" under dependencies
+  int flutterIndex = -1;
+  for (int i = dependenciesIndex + 1; i < lines.length; i++) {
+    if (lines[i].trim() == 'flutter:') {
+      flutterIndex = i;
+      break;
+    }
+  }
+
+  if (flutterIndex == -1) {
+    throw Exception('Could not find flutter dependency');
+  }
+
+  // Add required dependencies before flutter:
   final dependenciesToAdd = [
     '  flutter_bloc: ^8.1.3',
     '  equatable: ^2.0.5',
     '  get_it: ^7.6.4',
     if (apiChoice == 'dio') '  dio: ^5.3.2',
     if (apiChoice == 'http') '  http: ^1.1.0',
-    '  shared_preferences: ^2.2.2',
+    '  flutter_secure_storage: ^9.2.2',
   ];
 
-  // Insert after dependencies:
-  lines.insertAll(dependenciesIndex + 2, dependenciesToAdd);
+  // Insert dependencies before flutter:
+  for (int i = dependenciesToAdd.length - 1; i >= 0; i--) {
+    lines.insert(flutterIndex, dependenciesToAdd[i]);
+  }
 
   await pubspecFile.writeAsString(lines.join('\n'));
   print('✅ Updated pubspec.yaml with required dependencies');
@@ -1449,10 +1464,12 @@ class _${_capitalize(screenName.replaceAll('_', ''))}State extends State<${_capi
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              SharedPrefsHelper.logout();
-              Navigator.pushReplacementNamed(context, '/login');
+              await SecureStorageHelper.logout();
+              if (mounted) {
+                Navigator.pushReplacementNamed(context, '/login');
+              }
             },
             child: const Text('Logout'),
           ),
@@ -1798,6 +1815,8 @@ class AuthRegisterRequested extends AuthEvent {
 class AuthLogoutRequested extends AuthEvent {}
 
 class AuthCheckStatus extends AuthEvent {}
+
+class AuthRefreshToken extends AuthEvent {}
 ''' : ''}
 """;
 
@@ -1862,6 +1881,7 @@ class ${_capitalize(name)}Bloc extends Bloc<${_capitalize(name)}Event, ${_capita
     on<AuthRegisterRequested>(_onRegisterRequested);
     on<AuthLogoutRequested>(_onLogoutRequested);
     on<AuthCheckStatus>(_onCheckStatus);
+    on<AuthRefreshToken>(_onRefreshToken);
     ''' : ''}
   }
 
@@ -1870,8 +1890,8 @@ class ${_capitalize(name)}Bloc extends Bloc<${_capitalize(name)}Event, ${_capita
     try {
       ${name == 'auth' ? '''
       // Check if user is already logged in
-      if (_repository.isLoggedIn()) {
-        final user = _repository.getCurrentUser();
+      if (await _repository.isLoggedIn()) {
+        final user = await _repository.getCurrentUser();
         if (user != null) {
           emit(AuthSuccess(user));
         } else {
@@ -1941,14 +1961,34 @@ class ${_capitalize(name)}Bloc extends Bloc<${_capitalize(name)}Event, ${_capita
   }
 
   Future<void> _onCheckStatus(AuthCheckStatus event, Emitter<AuthState> emit) async {
-    if (_repository.isLoggedIn()) {
-      final user = _repository.getCurrentUser();
-      if (user != null) {
-        emit(AuthSuccess(user));
+    try {
+      if (await _repository.isLoggedIn()) {
+        final user = await _repository.getCurrentUser();
+        if (user != null) {
+          emit(AuthSuccess(user));
+        } else {
+          emit(AuthUnauthenticated());
+        }
       } else {
         emit(AuthUnauthenticated());
       }
-    } else {
+    } catch (e) {
+      emit(AuthUnauthenticated());
+    }
+  }
+
+  Future<void> _onRefreshToken(AuthRefreshToken event, Emitter<AuthState> emit) async {
+    try {
+      final result = await _repository.refreshToken();
+      result.fold(
+        (failure) {
+          emit(AuthError(failure.message));
+          emit(AuthUnauthenticated());
+        },
+        (user) => emit(AuthSuccess(user)),
+      );
+    } catch (e) {
+      emit(AuthError('Token refresh failed: \$e'));
       emit(AuthUnauthenticated());
     }
   }
@@ -2066,7 +2106,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'app/service_locator.dart';
 import 'app/app_router.dart';
 import 'app/bloc_observer.dart';
-import 'core/utils/helpers.dart';
 import 'core/constants/app_constants.dart';
 import 'modules/auth/bloc/auth_bloc.dart';
 import 'modules/auth/bloc/auth_event.dart';
@@ -2075,9 +2114,6 @@ import 'modules/home/bloc/home_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize SharedPreferences
-  await SharedPrefsHelper.init();
   
   // Setup service locator
   await setupServiceLocator();
