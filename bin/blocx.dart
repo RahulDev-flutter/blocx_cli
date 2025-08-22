@@ -99,3 +99,90 @@ void createModule(String projectPath, String moduleName) {
 
   print('✅ Module "$moduleName" created with 2 screens & repository');
 }
+
+const dioClientTemplate = """
+import 'package:dio/dio.dart';
+
+class DioClient {
+  final Dio _dio = Dio(BaseOptions(
+    connectTimeout: Duration(seconds: 10),
+    receiveTimeout: Duration(seconds: 10),
+  ));
+
+  Future<Response> get(String path, {Map<String, dynamic>? queryParams}) async {
+    try {
+      return await _dio.get(path, queryParameters: queryParams);
+    } on DioException catch (e) {
+      throw Exception(_handleError(e));
+    }
+  }
+
+  Future<Response> post(String path, {dynamic data}) async {
+    try {
+      return await _dio.post(path, data: data);
+    } on DioException catch (e) {
+      throw Exception(_handleError(e));
+    }
+  }
+
+  String _handleError(DioException error) {
+    if (error.type == DioExceptionType.connectionTimeout) {
+      return "Connection timeout. Please try again.";
+    } else if (error.response != null) {
+      return "Error: \${error.response?.statusCode} \${error.response?.statusMessage}";
+    } else {
+      return "Unexpected error occurred.";
+    }
+  }
+}
+""";
+
+const httpClientTemplate = """
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+class HttpClient {
+  final String baseUrl;
+
+  HttpClient({required this.baseUrl});
+
+  Future<dynamic> get(String endpoint) async {
+    try {
+      final response = await http.get(Uri.parse('\$baseUrl\$endpoint'));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed: \${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: \$e');
+    }
+  }
+}
+""";
+
+String repositoryTemplate(String name) => """
+class ${_capitalize(name)}Repository {
+  Future<void> fetchData() async {
+    // TODO: implement repository logic
+  }
+}
+""";
+
+String screenTemplate(String title) => """
+import 'package:flutter/material.dart';
+
+class ${_capitalize(title.replaceAll(" ", ""))} extends StatelessWidget {
+  const ${_capitalize(title.replaceAll(" ", ""))}({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('$title')),
+      body: const Center(child: Text('This is $title')),
+    );
+  }
+}
+""";
+
+String _capitalize(String s) => s[0].toUpperCase() + s.substring(1);
