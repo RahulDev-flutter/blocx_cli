@@ -7,7 +7,7 @@ environment:
   sdk: ^3.9.0
 
 executables:
-  blocx: bin/blocx.dart
+  blocx: blocx
 
 dependencies:
   path: ^1.9.1
