@@ -3,21 +3,21 @@
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as p;
+import 'package:prompts/prompts.dart' as prompts;
 
 void main(List<String> arguments) async {
   final parser = ArgParser()..addCommand('create');
-
   final argResults = parser.parse(arguments);
 
   if (argResults.command?.name == 'create') {
-    final featureName = argResults.command?.rest.first;
+    final projectName = argResults.command?.rest.first;
 
-    if (featureName == null) {
-      print('❌ Please provide a feature name.');
+    if (projectName == null) {
+      print('❌ Please provide a project name.');
       exit(1);
     }
 
-    await createOrUpdateProject(featureName);
+    await createOrUpdateProject(projectName);
   } else {
     print('BlocX CLI - Usage: blocx create <project_name>');
   }
@@ -40,49 +40,62 @@ Future<void> createOrUpdateProject(String name) async {
     print('📁 Project "$name" already exists. Proceeding to update...');
   }
 
-  // Now generate the feature structure
-  final featurePath = p.join(projectDir.path, 'lib', 'features', name);
+  // Step 1: Ask which API client
+  final apiChoice = prompts.choose<String>(
+    '👉 Which API package do you want to use?',
+    ['http', 'dio'],
+  );
 
-  createCleanArchitectureStructure(featurePath, name);
+  // Step 2: Generate network layer
+  final networkPath = p.join(projectDir.path, 'lib', 'core', 'network');
+  createNetworkLayer(networkPath, apiChoice);
+
+  // Step 3: Create default modules (Auth & Home)
+  createModule(projectDir.path, 'auth');
+  createModule(projectDir.path, 'home');
+
+  print('🎉 Project "$name" is ready with $apiChoice setup + Auth & Home modules!');
 }
 
-void createCleanArchitectureStructure(String basePath, String featureName) {
-  final baseDir = Directory(basePath);
+void createNetworkLayer(String basePath, String apiChoice) {
+  final dir = Directory(basePath);
+  dir.createSync(recursive: true);
 
-  final domainDir = Directory(p.join(baseDir.path, 'domain'));
-  final dataDir = Directory(p.join(baseDir.path, 'data'));
-  final presentationDir = Directory(p.join(baseDir.path, 'presentation'));
+  final file = File(p.join(basePath, '${apiChoice}_client.dart'));
 
-  final entitiesDir = Directory(p.join(domainDir.path, 'entities'));
-  final usecasesDir = Directory(p.join(domainDir.path, 'usecases'));
-  final repositoriesDir = Directory(p.join(domainDir.path, 'repositories'));
+  String content = '';
+  if (apiChoice == 'dio') {
+    content = dioClientTemplate;
+  } else {
+    content = httpClientTemplate;
+  }
 
-  final blocDir = Directory(p.join(presentationDir.path, 'bloc'));
-  final screensDir = Directory(p.join(presentationDir.path, 'screens'));
+  file.writeAsStringSync(content);
+  print('✅ Network layer created with $apiChoice');
+}
 
-  final repoImplDir = Directory(p.join(dataDir.path, 'repositories'));
-  final datasourcesDir = Directory(p.join(dataDir.path, 'datasources'));
-  final modelsDir = Directory(p.join(dataDir.path, 'models'));
+void createModule(String projectPath, String moduleName) {
+  final moduleBase = p.join(projectPath, 'lib', 'modules', moduleName);
 
   final dirs = [
-    domainDir,
-    entitiesDir,
-    usecasesDir,
-    repositoriesDir,
-    dataDir,
-    repoImplDir,
-    datasourcesDir,
-    modelsDir,
-    presentationDir,
-    blocDir,
-    screensDir,
+    Directory(p.join(moduleBase, 'bloc')),
+    Directory(p.join(moduleBase, 'screens')),
+    Directory(p.join(moduleBase, 'repository')),
   ];
 
   for (final dir in dirs) {
-    if (!dir.existsSync()) {
-      dir.createSync(recursive: true);
-    }
+    dir.createSync(recursive: true);
   }
 
-  print('✅ Feature "$featureName" added to project "$featureName" with clean architecture folders.');
+  // Create repository file
+  File(p.join(moduleBase, 'repository', '${moduleName}_repository.dart'))
+      .writeAsStringSync(repositoryTemplate(moduleName));
+
+  // Create 2 screens
+  File(p.join(moduleBase, 'screens', '${moduleName}_screen1.dart'))
+      .writeAsStringSync(screenTemplate('${moduleName} Screen 1'));
+  File(p.join(moduleBase, 'screens', '${moduleName}_screen2.dart'))
+      .writeAsStringSync(screenTemplate('${moduleName} Screen 2'));
+
+  print('✅ Module "$moduleName" created with 2 screens & repository');
 }
