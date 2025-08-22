@@ -41,7 +41,7 @@ Future<void> createOrUpdateProject(String name) async {
   }
 
   // Step 1: Ask which API client
-  final apiChoice = prompts.choose<String>(
+  final String apiChoice = prompts.choose(
     '👉 Which API package do you want to use?',
     ['http', 'dio'],
   );
@@ -54,7 +54,7 @@ Future<void> createOrUpdateProject(String name) async {
   createModule(projectDir.path, 'auth');
   createModule(projectDir.path, 'home');
 
-  print('🎉 Project "$name" is ready with $apiChoice setup + Auth & Home modules!');
+  print('🎉 Project "$name" is ready with $apiChoice setup + Auth & Home modules + Bloc boilerplate!');
 }
 
 void createNetworkLayer(String basePath, String apiChoice) {
@@ -97,8 +97,21 @@ void createModule(String projectPath, String moduleName) {
   File(p.join(moduleBase, 'screens', '${moduleName}_screen2.dart'))
       .writeAsStringSync(screenTemplate('${moduleName} Screen 2'));
 
-  print('✅ Module "$moduleName" created with 2 screens & repository');
+  // Create Bloc files
+  final blocBase = p.join(moduleBase, 'bloc');
+  File(p.join(blocBase, '${moduleName}_event.dart'))
+      .writeAsStringSync(eventTemplate(moduleName));
+  File(p.join(blocBase, '${moduleName}_state.dart'))
+      .writeAsStringSync(stateTemplate(moduleName));
+  File(p.join(blocBase, '${moduleName}_bloc.dart'))
+      .writeAsStringSync(blocTemplate(moduleName));
+
+  print('✅ Module "$moduleName" created with 2 screens, repository, and Bloc boilerplate');
 }
+
+//
+// ===================== Templates =====================
+//
 
 const dioClientTemplate = """
 import 'package:dio/dio.dart';
@@ -185,4 +198,63 @@ class ${_capitalize(title.replaceAll(" ", ""))} extends StatelessWidget {
 }
 """;
 
+String eventTemplate(String name) => """
+import 'package:equatable/equatable.dart';
+
+abstract class ${_capitalize(name)}Event extends Equatable {
+  const ${_capitalize(name)}Event();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ${_capitalize(name)}Started extends ${_capitalize(name)}Event {}
+""";
+
+String stateTemplate(String name) => """
+import 'package:equatable/equatable.dart';
+
+abstract class ${_capitalize(name)}State extends Equatable {
+  const ${_capitalize(name)}State();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ${_capitalize(name)}Initial extends ${_capitalize(name)}State {}
+
+class ${_capitalize(name)}Loading extends ${_capitalize(name)}State {}
+
+class ${_capitalize(name)}Loaded extends ${_capitalize(name)}State {}
+
+class ${_capitalize(name)}Error extends ${_capitalize(name)}State {
+  final String message;
+  const ${_capitalize(name)}Error(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+""";
+
+String blocTemplate(String name) => """
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '${name}_event.dart';
+import '${name}_state.dart';
+
+class ${_capitalize(name)}Bloc extends Bloc<${_capitalize(name)}Event, ${_capitalize(name)}State> {
+  ${_capitalize(name)}Bloc() : super(${_capitalize(name)}Initial()) {
+    on<${_capitalize(name)}Started>((event, emit) async {
+      emit(${_capitalize(name)}Loading());
+      try {
+        await Future.delayed(const Duration(seconds: 1)); // mock fetch
+        emit(${_capitalize(name)}Loaded());
+      } catch (e) {
+        emit(${_capitalize(name)}Error(e.toString()));
+      }
+    });
+  }
+}
+""";
+
 String _capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+
