@@ -72,7 +72,7 @@ class AppBlocObserver extends BlocObserver {
   }
 
   @override
-  void onEvent(BlocBase bloc, Object? event) {
+  void onEvent(Bloc bloc, Object? event) { // 👈 Bloc, not BlocBase
     super.onEvent(bloc, event);
     print('onEvent -- \${bloc.runtimeType}, \$event');
   }
@@ -84,7 +84,7 @@ class AppBlocObserver extends BlocObserver {
   }
 
   @override
-  void onTransition(BlocBase bloc, Transition transition) {
+  void onTransition(Bloc bloc, Transition transition) { // 👈 Bloc, not BlocBase
     super.onTransition(bloc, transition);
     print('onTransition -- \${bloc.runtimeType}, \$transition');
   }

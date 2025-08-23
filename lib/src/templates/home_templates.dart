@@ -178,6 +178,9 @@ class _${CliHelpers.toPascalCase(screenName)}State extends State<${CliHelpers.to
                           label: const Text('Logout'),
                         ),'''}
                 ],
+                ),
+               ),
+              ],
               ),
             );
           },
