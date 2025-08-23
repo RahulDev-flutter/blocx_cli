@@ -1,4 +1,4 @@
-import '../utils/project_validator.dart';
+import '../utils/cli_helpers.dart';
 
 class HomeTemplates {
   static String homeScreenTemplate(String screenName, String title) => """
@@ -9,14 +9,14 @@ import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
 import '../../../core/utils/helpers.dart';
 
-class ${ProjectValidator.toPascalCase(screenName)} extends StatefulWidget {
-  const ${ProjectValidator.toPascalCase(screenName)}({super.key});
+class ${CliHelpers.toPascalCase(screenName)} extends StatefulWidget {
+  const ${CliHelpers.toPascalCase(screenName)}({super.key});
 
   @override
-  State<${ProjectValidator.toPascalCase(screenName)}> createState() => _${ProjectValidator.toPascalCase(screenName)}State();
+  State<${CliHelpers.toPascalCase(screenName)}> createState() => _${CliHelpers.toPascalCase(screenName)}State();
 }
 
-class _${ProjectValidator.toPascalCase(screenName)}State extends State<${ProjectValidator.toPascalCase(screenName)}> {
+class _${CliHelpers.toPascalCase(screenName)}State extends State<${CliHelpers.toPascalCase(screenName)}> {
   @override
   void initState() {
     super.initState();
@@ -215,28 +215,16 @@ class _${ProjectValidator.toPascalCase(screenName)}State extends State<${Project
   }
 
   ''' : ''}void _logout() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              await SecureStorageHelper.logout();
-              if (mounted) {
-                Navigator.pushReplacementNamed(context, '/login');
-              }
-            },
-            child: const Text('Logout'),
-          ),
-        ],
-      ),
+    AppHelpers.showConfirmDialog(
+      context,
+      'Logout',
+      'Are you sure you want to logout?',
+      () async {
+        await SecureStorageHelper.logout();
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/login');
+        }
+      },
     );
   }
 }
@@ -281,7 +269,7 @@ class HomeRepository {
       final response = await _apiService.get(ApiConstants.dashboard);
       
       if (response.success) {
-        return Right(response.data ?? {});
+        return Right(response.data as Map<String, dynamic>? ?? {});
       } else {
         return Left(ServerFailure(response.message ?? 'Failed to load dashboard'));
       }
@@ -297,7 +285,7 @@ class HomeRepository {
       final response = await _apiService.get(ApiConstants.profile);
       
       if (response.success) {
-        return Right(response.data ?? {});
+        return Right(response.data as Map<String, dynamic>? ?? {});
       } else {
         return Left(ServerFailure(response.message ?? 'Failed to load profile'));
       }

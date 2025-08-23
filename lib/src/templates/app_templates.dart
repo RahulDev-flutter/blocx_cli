@@ -178,7 +178,7 @@ class MyApp extends StatelessWidget {
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),
               );
-            } else if (state is AuthSuccess) {
+            } else if (state is AuthAuthenticated) {
               return const _HomeWrapper();
             } else {
               return const _AuthWrapper();

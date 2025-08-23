@@ -1,4 +1,4 @@
-import '../utils/project_validator.dart';
+import '../utils/cli_helpers.dart';
 
 class AuthTemplates {
   static String authScreenTemplate(String screenName, String title) => """
@@ -11,14 +11,14 @@ import '../models/auth_request.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/utils/helpers.dart';
 
-class ${ProjectValidator.toPascalCase(screenName)} extends StatefulWidget {
-  const ${ProjectValidator.toPascalCase(screenName)}({super.key});
+class ${CliHelpers.toPascalCase(screenName)} extends StatefulWidget {
+  const ${CliHelpers.toPascalCase(screenName)}({super.key});
 
   @override
-  State<${ProjectValidator.toPascalCase(screenName)}> createState() => _${ProjectValidator.toPascalCase(screenName)}State();
+  State<${CliHelpers.toPascalCase(screenName)}> createState() => _${CliHelpers.toPascalCase(screenName)}State();
 }
 
-class _${ProjectValidator.toPascalCase(screenName)}State extends State<${ProjectValidator.toPascalCase(screenName)}> {
+class _${CliHelpers.toPascalCase(screenName)}State extends State<${CliHelpers.toPascalCase(screenName)}> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -43,7 +43,7 @@ class _${ProjectValidator.toPascalCase(screenName)}State extends State<${Project
         listener: (context, state) {
           if (state is AuthError) {
             AppHelpers.showSnackBar(context, state.message, isError: true);
-          } else if (state is AuthSuccess) {
+          } else if (state is AuthAuthenticated) {
             AppHelpers.showSnackBar(context, '${title} successful!');
             Navigator.pushReplacementNamed(context, '/home');
           }
@@ -143,9 +143,11 @@ class _${ProjectValidator.toPascalCase(screenName)}State extends State<${Project
       final password = _passwordController.text.trim();
       
       context.read<AuthBloc>().add(
-        ${screenName.contains('login') ? 'AuthLoginRequested' : 'AuthRegisterRequested'}(
-          ${screenName.contains('login') ? 'LoginRequest(email: email, password: password)' : 'RegisterRequest(email: email, password: password)'}
-        ),
+        ${screenName.contains('login') ? '''AuthLoginRequested(
+          LoginRequest(email: email, password: password)
+        )''' : '''AuthRegisterRequested(
+          RegisterRequest(email: email, password: password)
+        )'''},
       );
     }
   }
@@ -198,9 +200,9 @@ class AuthRepository {
       );
       
       if (response.success) {
-        final userModel = UserModel.fromJson(response.data['user']);
-        final token = response.data['token'];
-        final refreshToken = response.data['refresh_token'];
+        final userModel = UserModel.fromJson(response.data['user'] as Map<String, dynamic>);
+        final token = response.data['token'] as String;
+        final refreshToken = response.data['refresh_token'] as String?;
         
         // Save auth data securely
         await SecureStorageHelper.saveUserSession(
@@ -229,9 +231,9 @@ class AuthRepository {
       );
       
       if (response.success) {
-        final userModel = UserModel.fromJson(response.data['user']);
-        final token = response.data['token'];
-        final refreshToken = response.data['refresh_token'];
+        final userModel = UserModel.fromJson(response.data['user'] as Map<String, dynamic>);
+        final token = response.data['token'] as String;
+        final refreshToken = response.data['refresh_token'] as String?;
         
         // Save auth data securely
         await SecureStorageHelper.saveUserSession(
@@ -270,7 +272,7 @@ class AuthRepository {
     try {
       final userData = await SecureStorageHelper.getUserData();
       if (userData != null) {
-        return UserModel.fromJson(jsonDecode(userData));
+        return UserModel.fromJson(jsonDecode(userData) as Map<String, dynamic>);
       }
     } catch (e) {
       print('Error parsing user data: \$e');
@@ -295,9 +297,9 @@ class AuthRepository {
       );
       
       if (response.success) {
-        final newToken = response.data['token'];
-        final newRefreshToken = response.data['refresh_token'];
-        final userModel = UserModel.fromJson(response.data['user']);
+        final newToken = response.data['token'] as String;
+        final newRefreshToken = response.data['refresh_token'] as String?;
+        final userModel = UserModel.fromJson(response.data['user'] as Map<String, dynamic>);
         
         await SecureStorageHelper.saveAuthToken(newToken);
         if (newRefreshToken != null) {
@@ -342,12 +344,16 @@ class UserModel extends Equatable {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'] ?? '',
-      email: json['email'] ?? '',
-      name: json['name'],
-      phone: json['phone'],
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
+      id: json['id']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      name: json['name']?.toString(),
+      phone: json['phone']?.toString(),
+      createdAt: json['created_at'] != null 
+          ? DateTime.tryParse(json['created_at'].toString())
+          : null,
+      updatedAt: json['updated_at'] != null 
+          ? DateTime.tryParse(json['updated_at'].toString())
+          : null,
     );
   }
 

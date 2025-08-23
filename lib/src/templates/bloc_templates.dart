@@ -1,45 +1,35 @@
-import '../utils/project_validator.dart';
+import '../utils/cli_helpers.dart';
 
 class BlocTemplates {
   static String eventTemplate(String name) => """
 import 'package:equatable/equatable.dart';
 
-abstract class ${ProjectValidator.capitalize(name)}Event extends Equatable {
-  const ${ProjectValidator.capitalize(name)}Event();
+abstract class ${CliHelpers.capitalize(name)}Event extends Equatable {
+  const ${CliHelpers.capitalize(name)}Event();
 
   @override
   List<Object?> get props => [];
 }
 
-class ${ProjectValidator.capitalize(name)}Started extends ${ProjectValidator.capitalize(name)}Event {}
+class ${CliHelpers.capitalize(name)}Started extends ${CliHelpers.capitalize(name)}Event {}
 
 ${name == 'auth' ? '''
 class AuthLoginRequested extends AuthEvent {
-  final String email;
-  final String password;
+  final LoginRequest request;
   
-  const AuthLoginRequested({
-    required this.email,
-    required this.password,
-  });
+  const AuthLoginRequested(this.request);
   
   @override
-  List<Object> get props => [email, password];
+  List<Object> get props => [request];
 }
 
 class AuthRegisterRequested extends AuthEvent {
-  final String email;
-  final String password;
-  final String? name;
+  final RegisterRequest request;
   
-  const AuthRegisterRequested({
-    required this.email,
-    required this.password,
-    this.name,
-  });
+  const AuthRegisterRequested(this.request);
   
   @override
-  List<Object?> get props => [email, password, name];
+  List<Object> get props => [request];
 }
 
 class AuthLogoutRequested extends AuthEvent {}
@@ -54,38 +44,38 @@ class AuthRefreshToken extends AuthEvent {}
 import 'package:equatable/equatable.dart';
 ${name == 'auth' ? "import '../models/user_model.dart';" : ''}
 
-abstract class ${ProjectValidator.capitalize(name)}State extends Equatable {
-  const ${ProjectValidator.capitalize(name)}State();
+abstract class ${CliHelpers.capitalize(name)}State extends Equatable {
+  const ${CliHelpers.capitalize(name)}State();
 
   @override
   List<Object?> get props => [];
 }
 
-class ${ProjectValidator.capitalize(name)}Initial extends ${ProjectValidator.capitalize(name)}State {}
+class ${CliHelpers.capitalize(name)}Initial extends ${CliHelpers.capitalize(name)}State {}
 
-class ${ProjectValidator.capitalize(name)}Loading extends ${ProjectValidator.capitalize(name)}State {}
+class ${CliHelpers.capitalize(name)}Loading extends ${CliHelpers.capitalize(name)}State {}
 
-class ${ProjectValidator.capitalize(name)}Loaded extends ${ProjectValidator.capitalize(name)}State {
+class ${CliHelpers.capitalize(name)}Loaded extends ${CliHelpers.capitalize(name)}State {
   ${name == 'home' ? 'final Map<String, dynamic> data;' : ''}
   
-  ${name == 'home' ? 'const ${ProjectValidator.capitalize(name)}Loaded(this.data);' : ''}
+  ${name == 'home' ? 'const ${CliHelpers.capitalize(name)}Loaded(this.data);' : ''}
   
   ${name == 'home' ? '@override\n  List<Object> get props => [data];' : ''}
 }
 
-class ${ProjectValidator.capitalize(name)}Error extends ${ProjectValidator.capitalize(name)}State {
+class ${CliHelpers.capitalize(name)}Error extends ${CliHelpers.capitalize(name)}State {
   final String message;
-  const ${ProjectValidator.capitalize(name)}Error(this.message);
+  const ${CliHelpers.capitalize(name)}Error(this.message);
 
   @override
   List<Object> get props => [message];
 }
 
 ${name == 'auth' ? '''
-class AuthSuccess extends AuthState {
+class AuthAuthenticated extends AuthState {
   final UserModel user;
   
-  const AuthSuccess(this.user);
+  const AuthAuthenticated(this.user);
   
   @override
   List<Object> get props => [user];
@@ -102,11 +92,11 @@ import '${name}_state.dart';
 import '../repository/${name}_repository.dart';
 ${name == 'auth' ? "import '../models/auth_request.dart';" : ''}
 
-class ${ProjectValidator.capitalize(name)}Bloc extends Bloc<${ProjectValidator.capitalize(name)}Event, ${ProjectValidator.capitalize(name)}State> {
-  final ${ProjectValidator.capitalize(name)}Repository _repository;
+class ${CliHelpers.capitalize(name)}Bloc extends Bloc<${CliHelpers.capitalize(name)}Event, ${CliHelpers.capitalize(name)}State> {
+  final ${CliHelpers.capitalize(name)}Repository _repository;
 
-  ${ProjectValidator.capitalize(name)}Bloc(this._repository) : super(${ProjectValidator.capitalize(name)}Initial()) {
-    on<${ProjectValidator.capitalize(name)}Started>(_onStarted);
+  ${CliHelpers.capitalize(name)}Bloc(this._repository) : super(${CliHelpers.capitalize(name)}Initial()) {
+    on<${CliHelpers.capitalize(name)}Started>(_onStarted);
     ${name == 'auth' ? '''
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthRegisterRequested>(_onRegisterRequested);
@@ -116,15 +106,15 @@ class ${ProjectValidator.capitalize(name)}Bloc extends Bloc<${ProjectValidator.c
     ''' : ''}
   }
 
-  Future<void> _onStarted(${ProjectValidator.capitalize(name)}Started event, Emitter<${ProjectValidator.capitalize(name)}State> emit) async {
-    emit(${ProjectValidator.capitalize(name)}Loading());
+  Future<void> _onStarted(${CliHelpers.capitalize(name)}Started event, Emitter<${CliHelpers.capitalize(name)}State> emit) async {
+    emit(${CliHelpers.capitalize(name)}Loading());
     try {
       ${name == 'auth' ? '''
       // Check if user is already logged in
       if (await _repository.isLoggedIn()) {
         final user = await _repository.getCurrentUser();
         if (user != null) {
-          emit(AuthSuccess(user));
+          emit(AuthAuthenticated(user));
         } else {
           emit(AuthUnauthenticated());
         }
@@ -134,15 +124,15 @@ class ${ProjectValidator.capitalize(name)}Bloc extends Bloc<${ProjectValidator.c
       ''' : name == 'home' ? '''
       final result = await _repository.getDashboardData();
       result.fold(
-        (failure) => emit(${ProjectValidator.capitalize(name)}Error(failure.message)),
-        (data) => emit(${ProjectValidator.capitalize(name)}Loaded(data)),
+        (failure) => emit(${CliHelpers.capitalize(name)}Error(failure.message ?? 'Unknown error')),
+        (data) => emit(${CliHelpers.capitalize(name)}Loaded(data)),
       );
       ''' : '''
       await Future.delayed(const Duration(seconds: 1)); // mock fetch
-      emit(${ProjectValidator.capitalize(name)}Loaded());
+      emit(${CliHelpers.capitalize(name)}Loaded());
       '''}
     } catch (e) {
-      emit(${ProjectValidator.capitalize(name)}Error(e.toString()));
+      emit(${CliHelpers.capitalize(name)}Error(e.toString()));
     }
   }
 
@@ -150,14 +140,11 @@ class ${ProjectValidator.capitalize(name)}Bloc extends Bloc<${ProjectValidator.c
   Future<void> _onLoginRequested(AuthLoginRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      final result = await _repository.login(LoginRequest(
-        email: event.email,
-        password: event.password,
-      ));
+      final result = await _repository.login(event.request);
       
       result.fold(
-        (failure) => emit(AuthError(failure.message)),
-        (user) => emit(AuthSuccess(user)),
+        (failure) => emit(AuthError(failure.message ?? 'Login failed')),
+        (user) => emit(AuthAuthenticated(user)),
       );
     } catch (e) {
       emit(AuthError('Login failed: \$e'));
@@ -167,15 +154,11 @@ class ${ProjectValidator.capitalize(name)}Bloc extends Bloc<${ProjectValidator.c
   Future<void> _onRegisterRequested(AuthRegisterRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      final result = await _repository.register(RegisterRequest(
-        email: event.email,
-        password: event.password,
-        name: event.name,
-      ));
+      final result = await _repository.register(event.request);
       
       result.fold(
-        (failure) => emit(AuthError(failure.message)),
-        (user) => emit(AuthSuccess(user)),
+        (failure) => emit(AuthError(failure.message ?? 'Registration failed')),
+        (user) => emit(AuthAuthenticated(user)),
       );
     } catch (e) {
       emit(AuthError('Registration failed: \$e'));
@@ -196,7 +179,7 @@ class ${ProjectValidator.capitalize(name)}Bloc extends Bloc<${ProjectValidator.c
       if (await _repository.isLoggedIn()) {
         final user = await _repository.getCurrentUser();
         if (user != null) {
-          emit(AuthSuccess(user));
+          emit(AuthAuthenticated(user));
         } else {
           emit(AuthUnauthenticated());
         }
@@ -213,10 +196,10 @@ class ${ProjectValidator.capitalize(name)}Bloc extends Bloc<${ProjectValidator.c
       final result = await _repository.refreshToken();
       result.fold(
         (failure) {
-          emit(AuthError(failure.message));
+          emit(AuthError(failure.message ?? 'Token refresh failed'));
           emit(AuthUnauthenticated());
         },
-        (user) => emit(AuthSuccess(user)),
+        (user) => emit(AuthAuthenticated(user)),
       );
     } catch (e) {
       emit(AuthError('Token refresh failed: \$e'));

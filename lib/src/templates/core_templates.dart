@@ -119,7 +119,9 @@ class DioClient {
       
       case DioExceptionType.badResponse:
         final statusCode = error.response?.statusCode;
-        final message = error.response?.data['message'] ?? 'Something went wrong';
+        final message = error.response?.data is Map 
+            ? error.response?.data['message']?.toString() ?? 'Something went wrong'
+            : 'Something went wrong';
         
         switch (statusCode) {
           case 400:
@@ -243,7 +245,7 @@ class HttpClient {
     String message = 'Something went wrong';
     try {
       final responseData = jsonDecode(response.body);
-      message = responseData['message'] ?? message;
+      message = responseData['message']?.toString() ?? message;
     } catch (e) {
       // Use default message if JSON parsing fails
     }
@@ -403,13 +405,13 @@ class ApiResponse<T> {
     
     if (isSuccess) {
       return ApiResponse<T>.success(
-        response.data,
-        message: 'Success',
+        response.data as T,
+        message: (response.data is Map ? response.data['message']?.toString() : null) ?? 'Success',
         statusCode: response.statusCode,
       );
     } else {
       return ApiResponse<T>.error(
-        response.data?['message'] ?? 'Something went wrong',
+        (response.data is Map ? response.data['message']?.toString() : null) ?? 'Something went wrong',
         statusCode: response.statusCode,
       );
     }
@@ -427,7 +429,7 @@ class ApiResponse<T> {
       }
       
       return ApiResponse<T>.success(
-        data,
+        data as T,
         message: 'Success',
         statusCode: response.statusCode,
       );
@@ -435,7 +437,7 @@ class ApiResponse<T> {
       String message = 'Something went wrong';
       try {
         final responseData = jsonDecode(response.body);
-        message = responseData['message'] ?? message;
+        message = responseData['message']?.toString() ?? message;
       } catch (e) {
         // Use default message
       }
@@ -654,7 +656,7 @@ class SecureStorageHelper {
       encryptedSharedPreferences: true,
     ),
     iOptions: IOSOptions(
-      accessibility: KeychainItemAccessibility.first_unlock_this_device,
+      accessibility: IOSAccessibility.first_unlock_this_device,
     ),
   );
   
@@ -1055,338 +1057,6 @@ class NotFoundException implements Exception {
   
   @override
   String toString() => 'NotFoundException: \$message';
-}
-""";
-
-  // Additional utility templates
-
-  static const String routeGeneratorTemplate = """
-import 'package:flutter/material.dart';
-import '../features/auth/presentation/screens/login_screen.dart';
-import '../features/auth/presentation/screens/register_screen.dart';
-import '../features/home/presentation/screens/home_screen.dart';
-import '../features/profile/presentation/screens/profile_screen.dart';
-import '../core/constants/app_constants.dart';
-
-class RouteGenerator {
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case AppConstants.splashRoute:
-        return MaterialPageRoute(builder: (_) => const SplashScreen());
-      
-      case AppConstants.loginRoute:
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
-      
-      case AppConstants.registerRoute:
-        return MaterialPageRoute(builder: (_) => const RegisterScreen());
-      
-      case AppConstants.forgotPasswordRoute:
-        return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
-      
-      case AppConstants.resetPasswordRoute:
-        final args = settings.arguments as Map<String, dynamic>?;
-        final token = args?['token'] as String?;
-        return MaterialPageRoute(
-          builder: (_) => ResetPasswordScreen(token: token),
-        );
-      
-      case AppConstants.homeRoute:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
-      
-      case AppConstants.profileRoute:
-        return MaterialPageRoute(builder: (_) => const ProfileScreen());
-      
-      case AppConstants.settingsRoute:
-        return MaterialPageRoute(builder: (_) => const SettingsScreen());
-      
-      default:
-        return _errorRoute(settings.name);
-    }
-  }
-  
-  static Route<dynamic> _errorRoute(String? routeName) {
-    return MaterialPageRoute(
-      builder: (_) => Scaffold(
-        appBar: AppBar(title: const Text('Error')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
-              Text('Route not found: \$routeName'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                  _,
-                  AppConstants.homeRoute,
-                  (route) => false,
-                ),
-                child: const Text('Go Home'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-""";
-
-  static const String themeConfigTemplate = """
-import 'package:flutter/material.dart';
-
-class AppTheme {
-  static const Color primaryColor = Color(0xFF2196F3);
-  static const Color secondaryColor = Color(0xFF03DAC6);
-  static const Color errorColor = Color(0xFFB00020);
-  static const Color backgroundColor = Color(0xFFFAFAFA);
-  static const Color surfaceColor = Color(0xFFFFFFFF);
-  
-  static ThemeData lightTheme = ThemeData(
-    useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryColor,
-      brightness: Brightness.light,
-    ),
-    appBarTheme: const AppBarTheme(
-      centerTitle: true,
-      elevation: 0,
-      scrolledUnderElevation: 1,
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    ),
-    cardTheme: CardTheme(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-    ),
-  );
-  
-  static ThemeData darkTheme = ThemeData(
-    useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryColor,
-      brightness: Brightness.dark,
-    ),
-    appBarTheme: const AppBarTheme(
-      centerTitle: true,
-      elevation: 0,
-      scrolledUnderElevation: 1,
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    ),
-    cardTheme: CardTheme(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-    ),
-  );
-}
-""";
-
-  static const String dependencyInjectionTemplate = """
-import 'package:get_it/get_it.dart';
-import '../features/auth/data/repositories/auth_repository.dart';
-import '../features/auth/presentation/bloc/auth_bloc.dart';
-import '../core/network/dio_client.dart';
-import '../core/network/api_service.dart';
-
-final GetIt sl = GetIt.instance;
-
-Future<void> initializeDependencies() async {
-  // Core
-  sl.registerLazySingleton<DioClient>(() => DioClient());
-  sl.registerLazySingleton<ApiService>(() => ApiService(sl()));
-  
-  // Repositories
-  sl.registerLazySingleton<AuthRepository>(() => AuthRepository(sl()));
-  
-  // Blocs
-  sl.registerFactory<AuthBloc>(() => AuthBloc(sl()));
-}
-""";
-
-  static const String splashScreenTemplate = """
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/constants/app_constants.dart';
-import '../../auth/presentation/bloc/auth_bloc.dart';
-import '../../auth/presentation/bloc/auth_event.dart';
-import '../../auth/presentation/bloc/auth_state.dart';
-
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeAnimations();
-    _checkAuthStatus();
-  }
-
-  void _initializeAnimations() {
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    ));
-
-    _scaleAnimation = Tween<double>(
-      begin: 0.5,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut,
-    ));
-
-    _controller.forward();
-  }
-
-  void _checkAuthStatus() {
-    Future.delayed(const Duration(seconds: 2), () {
-      context.read<AuthBloc>().add(AuthStarted());
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthAuthenticated) {
-            Navigator.pushReplacementNamed(context, AppConstants.homeRoute);
-          } else if (state is AuthUnauthenticated) {
-            Navigator.pushReplacementNamed(context, AppConstants.loginRoute);
-          }
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).primaryColor.withOpacity(0.8),
-              ],
-            ),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    return FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: ScaleTransition(
-                        scale: _scaleAnimation,
-                        child: Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            Icons.flutter_dash,
-                            size: 60,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 32),
-                FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Text(
-                    AppConstants.appName,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Text(
-                    'Version AppConstants.appVersion',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withOpacity(0.8),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 50),
-                const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 """;
 }
