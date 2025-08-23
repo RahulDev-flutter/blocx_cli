@@ -3,7 +3,7 @@ import '../utils/cli_helpers.dart';
 class BlocTemplates {
   static String eventTemplate(String name) => """
 import 'package:equatable/equatable.dart';
-import '../models/auth_request.dart';
+${name == 'auth' ? '''import '../models/auth_request.dart;''' : ''}
 
 abstract class ${CliHelpers.capitalize(name)}Event extends Equatable {
   const ${CliHelpers.capitalize(name)}Event();
