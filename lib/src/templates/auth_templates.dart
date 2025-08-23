@@ -11,14 +11,14 @@ import '../models/auth_request.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/utils/helpers.dart';
 
-class ${ProjectValidator.capitalize(screenName.replaceAll('_', ''))} extends StatefulWidget {
-  const ${ProjectValidator.capitalize(screenName.replaceAll('_', ''))}({super.key});
+class ${ProjectValidator.toPascalCase(screenName)} extends StatefulWidget {
+  const ${ProjectValidator.toPascalCase(screenName)}({super.key});
 
   @override
-  State<${ProjectValidator.capitalize(screenName.replaceAll('_', ''))}> createState() => _${ProjectValidator.capitalize(screenName.replaceAll('_', ''))}State();
+  State<${ProjectValidator.toPascalCase(screenName)}> createState() => _${ProjectValidator.toPascalCase(screenName)}State();
 }
 
-class _${ProjectValidator.capitalize(screenName.replaceAll('_', ''))}State extends State<${ProjectValidator.capitalize(screenName.replaceAll('_', ''))}> {
+class _${ProjectValidator.toPascalCase(screenName)}State extends State<${ProjectValidator.toPascalCase(screenName)}> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
