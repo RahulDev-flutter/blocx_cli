@@ -1,20 +1,23 @@
-name: blocx
-description: A CLI tool to generate BLoC + Clean Architecture boilerplate.
-version: 1.0.0
+name: rj_blocx
+description: RJ BlocX - Rahul Verma's powerful Flutter CLI tool for generating projects with BloC architecture, clean code structure, and best practices.
+version: 2.0.0
+author: Rahul Verma <rahul.dev.flutter@gmail.com>
+homepage: https://github.com/RahulDev-flutter/blocx_cli
 repository: https://github.com/RahulDev-flutter/blocx_cli
+issue_tracker: https://github.com/RahulDev-flutter/blocx_cli/issues
+documentation: https://github.com/RahulDev-flutter/blocx_cli#readme
 
 environment:
-  sdk: ^3.9.0
-
-executables:
-  blocx: blocx
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  path: ^1.9.1
-  args: ^2.7.0
-  io: ^1.0.5
+  args: ^2.4.2
+  path: ^1.8.3
   prompts: ^2.0.0
 
 dev_dependencies:
-  lints: ^6.0.0
-  test: ^1.25.6
+  lints: ^3.0.0
+  test: ^1.24.0
+
+executables:
+  rj_blocx:

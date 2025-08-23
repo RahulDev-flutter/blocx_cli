@@ -111,9 +111,9 @@
     },
     {
       "name": "lints",
-      "rootUri": "file:///Users/rahul/.pub-cache/hosted/pub.dev/lints-6.0.0",
+      "rootUri": "file:///Users/rahul/.pub-cache/hosted/pub.dev/lints-3.0.0",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.0"
     },
     {
       "name": "logging",
@@ -311,7 +311,7 @@
       "name": "blocx",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.0"
     }
   ],
   "generator": "pub",

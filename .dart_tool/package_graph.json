@@ -5,10 +5,9 @@
   "packages": [
     {
       "name": "blocx",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "dependencies": [
         "args",
-        "io",
         "path",
         "prompts"
       ],
@@ -51,7 +50,7 @@
     },
     {
       "name": "lints",
-      "version": "6.0.0",
+      "version": "3.0.0",
       "dependencies": []
     },
     {
@@ -63,22 +62,13 @@
       ]
     },
     {
-      "name": "io",
-      "version": "1.0.5",
-      "dependencies": [
-        "meta",
-        "path",
-        "string_scanner"
-      ]
+      "name": "path",
+      "version": "1.9.1",
+      "dependencies": []
     },
     {
       "name": "args",
       "version": "2.7.0",
-      "dependencies": []
-    },
-    {
-      "name": "path",
-      "version": "1.9.1",
       "dependencies": []
     },
     {
@@ -258,6 +248,15 @@
       "dependencies": []
     },
     {
+      "name": "io",
+      "version": "1.0.5",
+      "dependencies": [
+        "meta",
+        "path",
+        "string_scanner"
+      ]
+    },
+    {
       "name": "http_multi_server",
       "version": "3.2.2",
       "dependencies": [
@@ -321,16 +320,16 @@
       ]
     },
     {
+      "name": "charcode",
+      "version": "1.4.0",
+      "dependencies": []
+    },
+    {
       "name": "string_scanner",
       "version": "1.4.1",
       "dependencies": [
         "source_span"
       ]
-    },
-    {
-      "name": "meta",
-      "version": "1.17.0",
-      "dependencies": []
     },
     {
       "name": "logging",
@@ -376,6 +375,11 @@
         "source_maps",
         "stack_trace"
       ]
+    },
+    {
+      "name": "meta",
+      "version": "1.17.0",
+      "dependencies": []
     },
     {
       "name": "glob",
@@ -460,11 +464,6 @@
         "meta",
         "path"
       ]
-    },
-    {
-      "name": "charcode",
-      "version": "1.4.0",
-      "dependencies": []
     }
   ],
   "configVersion": 1

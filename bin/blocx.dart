@@ -3,29 +3,20 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-
-import 'src/commands/add_package_command.dart';
-import 'src/commands/create_command.dart';
-import 'src/commands/generate_command.dart';
-import 'src/utils/cli_helpers.dart';
+import 'package:blocx/src/commands/add_package_command.dart';
+import 'package:blocx/src/commands/create_command.dart';
+import 'package:blocx/src/commands/generate_command.dart';
+import 'package:blocx/src/utils/cli_helpers.dart';
 
 void main(List<String> arguments) async {
   final parser = ArgParser()
     ..addCommand('create')
     ..addCommand('add')
     ..addCommand('generate')
-    ..addFlag(
-      'help',
-      abbr: 'h',
-      help: 'Show help information',
-      negatable: false,
-    )
-    ..addFlag(
-      'version',
-      abbr: 'v',
-      help: 'Show version information',
-      negatable: false,
-    );
+    ..addFlag('help',
+        abbr: 'h', help: 'Show help information', negatable: false)
+    ..addFlag('version',
+        abbr: 'v', help: 'Show version information', negatable: false);
 
   final argResults = parser.parse(arguments);
 
@@ -37,7 +28,7 @@ void main(List<String> arguments) async {
 
   // Handle version flag
   if (argResults['version']) {
-    print('BlocX CLI version 2.0.0');
+    print('RJ BlocX CLI version 2.0.0 - Created by Rahul Verma');
     exit(0);
   }
 
@@ -65,7 +56,7 @@ void main(List<String> arguments) async {
 Future<void> _handleCreateCommand(ArgResults command) async {
   if (command.rest.isEmpty) {
     CliHelpers.printError('Please provide a project name.');
-    print('Usage: blocx create <project_name>');
+    print('Usage: rj_blocx create <project_name>');
     exit(1);
   }
 
@@ -78,10 +69,9 @@ Future<void> _handleAddCommand(ArgResults command) async {
   if (command.rest.isEmpty) {
     CliHelpers.printError('Please specify what to add.');
     print('Available options:');
-    print('  blocx add package <package_name>  # Add a Flutter package');
+    print('  rj_blocx add package <package_name>  # Add a Flutter package');
     print(
-      '  blocx add packages                # Add multiple packages interactively',
-    );
+        '  rj_blocx add packages                # Add multiple packages interactively');
     exit(1);
   }
 
@@ -92,7 +82,7 @@ Future<void> _handleAddCommand(ArgResults command) async {
     case 'package':
       if (command.rest.length < 2) {
         CliHelpers.printError('Please specify package name.');
-        print('Usage: blocx add package <package_name>');
+        print('Usage: rj_blocx add package <package_name>');
         exit(1);
       }
       final packageName = command.rest[1];
@@ -112,11 +102,10 @@ Future<void> _handleGenerateCommand(ArgResults command) async {
   if (command.rest.isEmpty) {
     CliHelpers.printError('Please specify what to generate.');
     print('Available options:');
-    print('  blocx generate module <module_name>   # Generate a new module');
-    print('  blocx generate screen <screen_name>   # Generate a new screen');
+    print('  rj_blocx generate module <module_name>   # Generate a new module');
+    print('  rj_blocx generate screen <screen_name>   # Generate a new screen');
     print(
-      '  blocx generate page <page_name>       # Generate a new page (alias for screen)',
-    );
+        '  rj_blocx generate page <page_name>       # Generate a new page (alias for screen)');
     exit(1);
   }
 
@@ -127,7 +116,7 @@ Future<void> _handleGenerateCommand(ArgResults command) async {
     case 'module':
       if (command.rest.length < 2) {
         CliHelpers.printError('Please specify module name.');
-        print('Usage: blocx generate module <module_name>');
+        print('Usage: rj_blocx generate module <module_name>');
         exit(1);
       }
       final moduleName = command.rest[1];
@@ -137,7 +126,7 @@ Future<void> _handleGenerateCommand(ArgResults command) async {
     case 'page':
       if (command.rest.length < 2) {
         CliHelpers.printError('Please specify ${subCommand} name.');
-        print('Usage: blocx generate $subCommand <${subCommand}_name>');
+        print('Usage: rj_blocx generate $subCommand <${subCommand}_name>');
         exit(1);
       }
       final screenName = command.rest[1];
@@ -151,24 +140,21 @@ Future<void> _handleGenerateCommand(ArgResults command) async {
 }
 
 void _showHelp() {
-  print('🚀 BlocX CLI v2.0.0 - Enhanced Flutter Project Generator');
+  print('🚀 RJ BlocX CLI v2.0.0 - Enhanced Flutter Project Generator');
+  print('   Created with ❤️ by Rahul Verma');
   print('');
   print('COMMANDS:');
   print('');
   print(
-    '  create <project_name>              Create a new Flutter project with Bloc architecture',
-  );
+      '  create <project_name>              Create a new Flutter project with Bloc architecture');
   print('  add package <package_name>         Add a single Flutter package');
   print(
-    '  add packages                       Add multiple packages interactively',
-  );
+      '  add packages                       Add multiple packages interactively');
   print(
-    '  generate module <module_name>      Generate a new module with Bloc structure',
-  );
+      '  generate module <module_name>      Generate a new module with Bloc structure');
   print('  generate screen <screen_name>      Generate a new screen');
   print(
-    '  generate page <page_name>          Generate a new page (alias for screen)',
-  );
+      '  generate page <page_name>          Generate a new page (alias for screen)');
   print('');
   print('OPTIONS:');
   print('  -h, --help                         Show this help information');
@@ -187,12 +173,13 @@ void _showHelp() {
   print('  ✅ Dynamic module/screen generation');
   print('');
   print('EXAMPLES:');
-  print('  blocx create my_awesome_app');
-  print('  blocx add package shared_preferences');
-  print('  blocx add packages');
-  print('  blocx generate module profile');
-  print('  blocx generate screen settings');
-  print('  blocx generate page user_dashboard');
+  print('  rj_blocx create my_awesome_app');
+  print('  rj_blocx add package shared_preferences');
+  print('  rj_blocx add packages');
+  print('  rj_blocx generate module profile');
+  print('  rj_blocx generate screen settings');
+  print('  rj_blocx generate page user_dashboard');
   print('');
-  print('For more information, visit: https://github.com/your-repo/blocx-cli');
+  print(
+      'For more information, visit: https://github.com/RahulDev-flutter/blocx_cli');
 }
