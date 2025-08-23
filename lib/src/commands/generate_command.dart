@@ -126,8 +126,7 @@ class GenerateCommand {
     print('🏗️  Configure your module:');
 
     // Number of screens
-    final screenCount =
-        int.tryParse(
+    final screenCount = int.tryParse(
           prompts.get('How many screens in this module?', defaultsTo: '2'),
         ) ??
         2;

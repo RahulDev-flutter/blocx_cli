@@ -1,8 +1,7 @@
 import '../utils/project_validator.dart';
 
 class HomeTemplates {
-  static String homeScreenTemplate(String screenName, String title) =>
-      """
+  static String homeScreenTemplate(String screenName, String title) => """
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/home_bloc.dart';

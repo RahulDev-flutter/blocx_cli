@@ -1,8 +1,7 @@
 import '../utils/project_validator.dart';
 
 class AuthTemplates {
-  static String authScreenTemplate(String screenName, String title) =>
-      """
+  static String authScreenTemplate(String screenName, String title) => """
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';

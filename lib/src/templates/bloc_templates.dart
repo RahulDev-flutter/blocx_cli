@@ -1,8 +1,7 @@
 import '../utils/project_validator.dart';
 
 class BlocTemplates {
-  static String eventTemplate(String name) =>
-      """
+  static String eventTemplate(String name) => """
 import 'package:equatable/equatable.dart';
 
 abstract class ${ProjectValidator.capitalize(name)}Event extends Equatable {
@@ -51,8 +50,7 @@ class AuthRefreshToken extends AuthEvent {}
 ''' : ''}
 """;
 
-  static String stateTemplate(String name) =>
-      """
+  static String stateTemplate(String name) => """
 import 'package:equatable/equatable.dart';
 ${name == 'auth' ? "import '../models/user_model.dart';" : ''}
 
@@ -97,8 +95,7 @@ class AuthUnauthenticated extends AuthState {}
 ''' : ''}
 """;
 
-  static String blocTemplate(String name) =>
-      """
+  static String blocTemplate(String name) => """
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '${name}_event.dart';
 import '${name}_state.dart';
@@ -122,8 +119,7 @@ class ${ProjectValidator.capitalize(name)}Bloc extends Bloc<${ProjectValidator.c
   Future<void> _onStarted(${ProjectValidator.capitalize(name)}Started event, Emitter<${ProjectValidator.capitalize(name)}State> emit) async {
     emit(${ProjectValidator.capitalize(name)}Loading());
     try {
-      ${name == 'auth'
-          ? '''
+      ${name == 'auth' ? '''
       // Check if user is already logged in
       if (await _repository.isLoggedIn()) {
         final user = await _repository.getCurrentUser();
@@ -135,16 +131,13 @@ class ${ProjectValidator.capitalize(name)}Bloc extends Bloc<${ProjectValidator.c
       } else {
         emit(AuthUnauthenticated());
       }
-      '''
-          : name == 'home'
-          ? '''
+      ''' : name == 'home' ? '''
       final result = await _repository.getDashboardData();
       result.fold(
         (failure) => emit(${ProjectValidator.capitalize(name)}Error(failure.message)),
         (data) => emit(${ProjectValidator.capitalize(name)}Loaded(data)),
       );
-      '''
-          : '''
+      ''' : '''
       await Future.delayed(const Duration(seconds: 1)); // mock fetch
       emit(${ProjectValidator.capitalize(name)}Loaded());
       '''}

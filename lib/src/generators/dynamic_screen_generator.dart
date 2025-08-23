@@ -1,9 +1,8 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-
-import '../templates/dynamic_templates.dart';
-import '../utils/cli_helpers.dart';
+import 'package:rj_blocx/src/templates/dynamic_templates.dart';
+import 'package:rj_blocx/src/utils/cli_helpers.dart';
 
 class DynamicScreenGenerator {
   Future<void> generate(

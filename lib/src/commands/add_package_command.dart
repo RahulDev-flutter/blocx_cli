@@ -185,9 +185,8 @@ class AddPackageCommand {
     }
 
     // Get selected packages
-    final selectedPackages = selectedNumbers
-        .map((index) => packagesToShow[index - 1].key)
-        .toList();
+    final selectedPackages =
+        selectedNumbers.map((index) => packagesToShow[index - 1].key).toList();
 
     CliHelpers.printEmptyLine();
     CliHelpers.printStep('Adding ${selectedPackages.length} packages...');

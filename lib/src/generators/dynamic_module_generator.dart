@@ -159,8 +159,7 @@ class DynamicModuleGenerator {
     final snakeModuleName = CliHelpers.toSnakeCase(moduleName);
 
     // Add endpoints for the new module
-    final newEndpoints =
-        '''
+    final newEndpoints = '''
   
   // $moduleName endpoints
   static const String ${snakeModuleName}List = '/$snakeModuleName';
@@ -218,8 +217,7 @@ class DynamicModuleGenerator {
     final lastImportIndex = updatedContent.lastIndexOf("import '../modules/");
     if (lastImportIndex != -1) {
       final endOfLastImport = updatedContent.indexOf('\n', lastImportIndex);
-      updatedContent =
-          updatedContent.substring(0, endOfLastImport) +
+      updatedContent = updatedContent.substring(0, endOfLastImport) +
           '\n$repositoryImport' +
           '\n$importStatement' +
           updatedContent.substring(endOfLastImport);
@@ -233,8 +231,7 @@ class DynamicModuleGenerator {
         repositoriesCommentIndex,
       );
       if (nextBlankLine != -1) {
-        updatedContent =
-            updatedContent.substring(0, nextBlankLine) +
+        updatedContent = updatedContent.substring(0, nextBlankLine) +
             '\n$repositoryRegistration' +
             updatedContent.substring(nextBlankLine);
       }
@@ -245,8 +242,7 @@ class DynamicModuleGenerator {
     if (blocsCommentIndex != -1) {
       final nextClosingBrace = updatedContent.indexOf('\n}', blocsCommentIndex);
       if (nextClosingBrace != -1) {
-        updatedContent =
-            updatedContent.substring(0, nextClosingBrace) +
+        updatedContent = updatedContent.substring(0, nextClosingBrace) +
             '\n$blocRegistration' +
             updatedContent.substring(nextClosingBrace);
       }

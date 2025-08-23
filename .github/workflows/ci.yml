@@ -23,7 +23,23 @@ jobs:
       - name: Get dependencies
         run: dart pub get
 
+      # Option 1: Auto-format and commit back (for push events only)
+      - name: Format code
+        if: github.event_name == 'push'
+        run: dart format .
+
+      - name: Commit formatted code
+        if: github.event_name == 'push'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git diff --staged --quiet || git commit -m "Auto-format code with dart format"
+          git push
+
+      # Option 2: Just verify formatting for PRs
       - name: Verify formatting
+        if: github.event_name == 'pull_request'
         run: dart format --output=none --set-exit-if-changed .
 
       - name: Analyze project source
@@ -49,7 +65,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'
+          flutter-version: '3.24.0'  # Updated to a more recent stable version
 
       - name: Get dependencies
         run: dart pub get
@@ -96,7 +112,7 @@ jobs:
           ./build/rj_blocx --help
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Updated to v4
         with:
           name: rj_blocx-executable
           path: build/rj_blocx
@@ -125,12 +141,12 @@ jobs:
           dart compile exe bin/rj_blocx.dart -o build/rj_blocx-linux
 
       - name: Create Release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1  # Updated to more maintained action
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: RJ BlocX CLI ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
+          name: RJ BlocX CLI ${{ github.ref_name }}
           body: |
             ## 🚀 RJ BlocX CLI - Created by Rahul Verma
             
@@ -159,5 +175,6 @@ jobs:
             ---
             
             **Made with ❤️ by Rahul Verma**
+          files: build/rj_blocx-linux
           draft: false
           prerelease: false

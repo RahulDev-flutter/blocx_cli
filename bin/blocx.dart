@@ -3,10 +3,12 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:blocx/src/commands/add_package_command.dart';
-import 'package:blocx/src/commands/create_command.dart';
-import 'package:blocx/src/commands/generate_command.dart';
-import 'package:blocx/src/utils/cli_helpers.dart';
+// FIXED: Change 'blocx' to your actual package name
+// Based on the error, this should likely be 'rj_blocx' or similar
+import 'package:rj_blocx/src/commands/add_package_command.dart';
+import 'package:rj_blocx/src/commands/create_command.dart';
+import 'package:rj_blocx/src/commands/generate_command.dart';
+import 'package:rj_blocx/src/utils/cli_helpers.dart';
 
 void main(List<String> arguments) async {
   final parser = ArgParser()
@@ -125,7 +127,7 @@ Future<void> _handleGenerateCommand(ArgResults command) async {
     case 'screen':
     case 'page':
       if (command.rest.length < 2) {
-        CliHelpers.printError('Please specify ${subCommand} name.');
+        CliHelpers.printError('Please specify $subCommand name.');
         print('Usage: rj_blocx generate $subCommand <${subCommand}_name>');
         exit(1);
       }

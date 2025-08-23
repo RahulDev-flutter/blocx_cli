@@ -1,6 +1,5 @@
 class AppTemplates {
-  static String serviceLocatorTemplate(bool isDio) =>
-      """
+  static String serviceLocatorTemplate(bool isDio) => """
 import 'package:get_it/get_it.dart';
 ${isDio ? "import '../core/network/dio_client.dart';" : "import '../core/network/http_client.dart';"}
 import '../core/network/api_service.dart';

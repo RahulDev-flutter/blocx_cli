@@ -262,8 +262,7 @@ Thumbs.db
     if (packages['permissions'] == true)
       enabledPackages.add('permission_handler');
 
-    final content =
-        '''
+    final content = '''
 # ${CliHelpers.toPascalCase(projectName)}
 
 A Flutter application built with BlocX CLI - featuring clean architecture, state management with BLoC pattern, and secure API integration.

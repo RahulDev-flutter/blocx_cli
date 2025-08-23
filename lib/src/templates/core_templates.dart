@@ -361,8 +361,7 @@ class ApiService {
 }
 """;
 
-  static String apiResponseTemplate(String apiChoice) =>
-      """
+  static String apiResponseTemplate(String apiChoice) => """
 import 'dart:convert';
 ${apiChoice == 'dio' ? "import 'package:dio/dio.dart';" : "import 'package:http/http.dart' as http;"}
 
