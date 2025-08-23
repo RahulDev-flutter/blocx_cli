@@ -217,10 +217,10 @@ class ${pascalModuleName}Bloc extends Bloc<${pascalModuleName}Event, ${pascalMod
     String snakeModuleName,
   ) =>
       '''
-import '../../core/network/api_service.dart';
-import '../../core/constants/api_constants.dart';
-import '../../core/errors/failures.dart';
-import '../../core/errors/exceptions.dart';
+import '/../core/network/api_service.dart';
+import '/../core/constants/api_constants.dart';
+import '/../core/errors/failures.dart';
+import '/../core/errors/exceptions.dart';
 import '../models/${snakeModuleName}_model.dart';
 
 // Either class for error handling
