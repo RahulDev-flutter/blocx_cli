@@ -4,50 +4,195 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 
-import 'src/project_generator.dart';
-import 'src/utils/project_validator.dart';
+import 'src/commands/add_package_command.dart';
+import 'src/commands/create_command.dart';
+import 'src/commands/generate_command.dart';
+import 'src/utils/cli_helpers.dart';
 
 void main(List<String> arguments) async {
-  final parser = ArgParser()..addCommand('create');
+  final parser = ArgParser()
+    ..addCommand('create')
+    ..addCommand('add')
+    ..addCommand('generate')
+    ..addFlag(
+      'help',
+      abbr: 'h',
+      help: 'Show help information',
+      negatable: false,
+    )
+    ..addFlag(
+      'version',
+      abbr: 'v',
+      help: 'Show version information',
+      negatable: false,
+    );
+
   final argResults = parser.parse(arguments);
 
-  if (argResults.command?.name == 'create') {
-    final projectName = argResults.command?.rest.first;
-
-    if (projectName == null) {
-      print('❌ Please provide a project name.');
-      print('Usage: blocx create <project_name>');
-      exit(1);
-    }
-
-    // Validate project name
-    if (!ProjectValidator.isValidProjectName(projectName)) {
-      print(
-        '❌ Invalid project name. Use lowercase letters, numbers, and underscores only.',
-      );
-      exit(1);
-    }
-
-    final generator = ProjectGenerator();
-    await generator.createProject(projectName);
-  } else {
+  // Handle help flag
+  if (argResults['help'] || arguments.isEmpty) {
     _showHelp();
+    exit(0);
+  }
+
+  // Handle version flag
+  if (argResults['version']) {
+    print('BlocX CLI version 2.0.0');
+    exit(0);
+  }
+
+  try {
+    switch (argResults.command?.name) {
+      case 'create':
+        await _handleCreateCommand(argResults.command!);
+        break;
+      case 'add':
+        await _handleAddCommand(argResults.command!);
+        break;
+      case 'generate':
+        await _handleGenerateCommand(argResults.command!);
+        break;
+      default:
+        print('❌ Unknown command. Use --help for available commands.');
+        exit(1);
+    }
+  } catch (e) {
+    CliHelpers.printError('Error: $e');
+    exit(1);
+  }
+}
+
+Future<void> _handleCreateCommand(ArgResults command) async {
+  if (command.rest.isEmpty) {
+    CliHelpers.printError('Please provide a project name.');
+    print('Usage: blocx create <project_name>');
+    exit(1);
+  }
+
+  final projectName = command.rest.first;
+  final createCommand = CreateCommand();
+  await createCommand.execute(projectName);
+}
+
+Future<void> _handleAddCommand(ArgResults command) async {
+  if (command.rest.isEmpty) {
+    CliHelpers.printError('Please specify what to add.');
+    print('Available options:');
+    print('  blocx add package <package_name>  # Add a Flutter package');
+    print(
+      '  blocx add packages                # Add multiple packages interactively',
+    );
+    exit(1);
+  }
+
+  final subCommand = command.rest.first;
+  final addPackageCommand = AddPackageCommand();
+
+  switch (subCommand) {
+    case 'package':
+      if (command.rest.length < 2) {
+        CliHelpers.printError('Please specify package name.');
+        print('Usage: blocx add package <package_name>');
+        exit(1);
+      }
+      final packageName = command.rest[1];
+      await addPackageCommand.addSinglePackage(packageName);
+      break;
+    case 'packages':
+      await addPackageCommand.addMultiplePackages();
+      break;
+    default:
+      CliHelpers.printError('Unknown add command: $subCommand');
+      print('Available options: package, packages');
+      exit(1);
+  }
+}
+
+Future<void> _handleGenerateCommand(ArgResults command) async {
+  if (command.rest.isEmpty) {
+    CliHelpers.printError('Please specify what to generate.');
+    print('Available options:');
+    print('  blocx generate module <module_name>   # Generate a new module');
+    print('  blocx generate screen <screen_name>   # Generate a new screen');
+    print(
+      '  blocx generate page <page_name>       # Generate a new page (alias for screen)',
+    );
+    exit(1);
+  }
+
+  final subCommand = command.rest.first;
+  final generateCommand = GenerateCommand();
+
+  switch (subCommand) {
+    case 'module':
+      if (command.rest.length < 2) {
+        CliHelpers.printError('Please specify module name.');
+        print('Usage: blocx generate module <module_name>');
+        exit(1);
+      }
+      final moduleName = command.rest[1];
+      await generateCommand.generateModule(moduleName);
+      break;
+    case 'screen':
+    case 'page':
+      if (command.rest.length < 2) {
+        CliHelpers.printError('Please specify ${subCommand} name.');
+        print('Usage: blocx generate $subCommand <${subCommand}_name>');
+        exit(1);
+      }
+      final screenName = command.rest[1];
+      await generateCommand.generateScreen(screenName);
+      break;
+    default:
+      CliHelpers.printError('Unknown generate command: $subCommand');
+      print('Available options: module, screen, page');
+      exit(1);
   }
 }
 
 void _showHelp() {
-  print('🚀 BlocX CLI - Flutter Project Generator with Bloc Architecture');
-  print('Usage: blocx create <project_name>');
+  print('🚀 BlocX CLI v2.0.0 - Enhanced Flutter Project Generator');
   print('');
-  print('Features:');
-  print('• Interactive API client selection (HTTP/Dio)');
-  print('• Auto-generated Auth & Home modules');
-  print('• Complete Bloc state management setup');
-  print('• Secure storage with flutter_secure_storage');
-  print('• Network layer with comprehensive error handling');
-  print('• Repository pattern implementation');
-  print('• Clean architecture with dependency injection');
+  print('COMMANDS:');
   print('');
-  print('Example:');
+  print(
+    '  create <project_name>              Create a new Flutter project with Bloc architecture',
+  );
+  print('  add package <package_name>         Add a single Flutter package');
+  print(
+    '  add packages                       Add multiple packages interactively',
+  );
+  print(
+    '  generate module <module_name>      Generate a new module with Bloc structure',
+  );
+  print('  generate screen <screen_name>      Generate a new screen');
+  print(
+    '  generate page <page_name>          Generate a new page (alias for screen)',
+  );
+  print('');
+  print('OPTIONS:');
+  print('  -h, --help                         Show this help information');
+  print('  -v, --version                      Show version information');
+  print('');
+  print('FEATURES:');
+  print('  ✅ Interactive API client selection (HTTP/Dio)');
+  print('  ✅ Auto-generated Auth & Home modules');
+  print('  ✅ Complete Bloc state management setup');
+  print('  ✅ Secure storage with flutter_secure_storage');
+  print('  ✅ Network layer with comprehensive error handling');
+  print('  ✅ Repository pattern implementation');
+  print('  ✅ Clean architecture with dependency injection');
+  print('  ✅ CamelCase formatting for class names');
+  print('  ✅ Package management');
+  print('  ✅ Dynamic module/screen generation');
+  print('');
+  print('EXAMPLES:');
   print('  blocx create my_awesome_app');
+  print('  blocx add package shared_preferences');
+  print('  blocx add packages');
+  print('  blocx generate module profile');
+  print('  blocx generate screen settings');
+  print('  blocx generate page user_dashboard');
+  print('');
+  print('For more information, visit: https://github.com/your-repo/blocx-cli');
 }
