@@ -156,11 +156,11 @@ class _${CliHelpers.toPascalCase(screenName)}State extends State<${CliHelpers.to
 
   static const String authRepositoryTemplate = """
 import 'dart:convert';
-import '../../core/network/api_service.dart';
-import '../../core/constants/api_constants.dart';
-import '../../core/errors/failures.dart';
-import '../../core/errors/exceptions.dart';
-import '../../core/utils/helpers.dart';
+import '/../core/network/api_service.dart';
+import '/../core/constants/api_constants.dart';
+import '/../core/errors/failures.dart';
+import '/../core/errors/exceptions.dart';
+import '/../core/utils/helpers.dart';
 import '../models/user_model.dart';
 import '../models/auth_request.dart';
 
