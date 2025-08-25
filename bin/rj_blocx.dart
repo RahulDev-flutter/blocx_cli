@@ -154,7 +154,7 @@ Future<void> _handleGenerateCommand(ArgResults command) async {
 
 void _showHelp() {
   print('🚀 RJ BlocX CLI v1.0.0 - Enhanced Flutter Project Generator');
-  print('   Created with ❤️ by Rahul Verma');
+  print('   Created with ❤️ by Rahul Verma ');
   print('');
   print('COMMANDS:');
   print('');
