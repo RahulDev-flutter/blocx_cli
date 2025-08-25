@@ -21,6 +21,6 @@ dev_dependencies:
 
 # Fixed executables section
 executables:
-  rj_blocx: blocx  # This maps 'rj_blocx' command to 'bin/rj_blocx.dart'
+  rj_blocx: rj_blocx  # This maps 'rj_blocx' command to 'bin/rj_blocx.dart'
   # Optional: Also allow 'blocx' as a command
-  blocx: blocx     # This maps 'blocx' command to 'bin/rj_blocx.dart'
+  blocx: rj_blocx     # This maps 'blocx' command to 'bin/rj_blocx.dart'
