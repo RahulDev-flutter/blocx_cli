@@ -3,7 +3,7 @@ import '../utils/cli_helpers.dart';
 class BlocTemplates {
   static String eventTemplate(String name) => """
 import 'package:equatable/equatable.dart';
-${name == 'auth' ? '''import '../models/auth_request.dart;''' : ''}
+${name == 'auth' ? '''import '../models/auth_request.dart';''' : ''}
 
 abstract class ${CliHelpers.capitalize(name)}Event extends Equatable {
   const ${CliHelpers.capitalize(name)}Event();
@@ -91,7 +91,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '${name}_event.dart';
 import '${name}_state.dart';
 import '../repository/${name}_repository.dart';
-${name == 'auth' ? "import '../models/auth_request.dart123';" : ''}
+${name == 'auth' ? "import '../models/auth_request.dart';" : ''}
 
 class ${CliHelpers.capitalize(name)}Bloc extends Bloc<${CliHelpers.capitalize(name)}Event, ${CliHelpers.capitalize(name)}State> {
   final ${CliHelpers.capitalize(name)}Repository _repository;
