@@ -217,12 +217,35 @@ class ${pascalModuleName}Bloc extends Bloc<${pascalModuleName}Event, ${pascalMod
     String snakeModuleName,
   ) =>
       '''
-import '../../core/network/api_service.dart';
-import '../../core/constants/api_constants.dart';
-import '../../core/errors/failures.dart';
-import '../../core/errors/exceptions.dart';
-import '../../core/utils/either.dart';
+import '/../core/network/api_service.dart';
+import '/../core/constants/api_constants.dart';
+import '/../core/errors/failures.dart';
+import '/../core/errors/exceptions.dart';
 import '../models/${snakeModuleName}_model.dart';
+
+
+// Either class for error handling
+abstract class Either<L, R> {
+  const Either();
+  
+  T fold<T>(T Function(L) left, T Function(R) right);
+}
+
+class Left<L, R> extends Either<L, R> {
+  final L value;
+  const Left(this.value);
+  
+  @override
+  T fold<T>(T Function(L) left, T Function(R) right) => left(value);
+}
+
+class Right<L, R> extends Either<L, R> {
+  final R value;
+  const Right(this.value);
+  
+  @override
+  T fold<T>(T Function(L) left, T Function(R) right) => right(value);
+}
 
 class ${pascalModuleName}Repository {
   final ApiService _apiService;
