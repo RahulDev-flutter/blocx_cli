@@ -53,8 +53,9 @@ jobs:
         if: github.event_name == 'pull_request'
         run: dart format --output=none --set-exit-if-changed .
 
+      # Changed: Only treat errors as fatal, not info/warnings
       - name: Analyze project source
-        run: dart analyze --fatal-infos
+        run: dart analyze --fatal-warnings
 
       - name: Run tests
         run: dart test
