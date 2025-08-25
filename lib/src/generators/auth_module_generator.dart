@@ -15,6 +15,7 @@ class AuthModuleGenerator extends BaseModuleGenerator {
     final authScreens = [
       {'name': 'login_screen', 'title': 'Login'},
       {'name': 'register_screen', 'title': 'Register'},
+      {'name': 'verify_otp_screen', 'title': 'Verify OTP'},
     ];
 
     for (final screen in authScreens) {

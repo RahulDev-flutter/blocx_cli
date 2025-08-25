@@ -116,7 +116,7 @@ class ProjectGenerator {
     if (modules['profile'] == true) {
       CliHelpers.printStep('Generating profile module...');
       await _moduleGenerator.generate(projectPath, 'profile', {
-        'screens': ['profile_screen', 'edit_profile_screen'],
+        'screens': ['profile_screen'],
         'repository': true,
         'models': true,
         'apiEndpoints': true,
@@ -126,10 +126,10 @@ class ProjectGenerator {
     if (modules['settings'] == true) {
       CliHelpers.printStep('Generating settings module...');
       await _moduleGenerator.generate(projectPath, 'settings', {
-        'screens': ['settings_screen', 'theme_settings_screen'],
-        'repository': false,
+        'screens': ['settings_screen'],
+        'repository': true,
         'models': true,
-        'apiEndpoints': false,
+        'apiEndpoints': true,
       });
     }
 

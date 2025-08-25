@@ -14,7 +14,6 @@ class HomeModuleGenerator extends BaseModuleGenerator {
     // Create Home-specific files
     final homeScreens = [
       {'name': 'home_screen', 'title': 'Home'},
-      {'name': 'profile_screen', 'title': 'Profile'},
     ];
 
     for (final screen in homeScreens) {
