@@ -30,7 +30,6 @@ import 'package:flutter/material.dart';
 import '../modules/auth/screens/login_screen.dart';
 import '../modules/auth/screens/register_screen.dart';
 import '../modules/home/screens/home_screen.dart';
-import '../modules/home/screens/profile_screen.dart';
 import '../core/constants/app_constants.dart';
 
 class AppRouter {
@@ -44,9 +43,7 @@ class AppRouter {
       
       case AppConstants.homeRoute:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
-      
-      case AppConstants.profileRoute:
-        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+        
       
       default:
         return MaterialPageRoute(
