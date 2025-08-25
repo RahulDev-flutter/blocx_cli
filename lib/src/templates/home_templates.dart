@@ -176,10 +176,12 @@ class _${CliHelpers.toPascalCase(screenName)}State extends State<${CliHelpers.to
                           onPressed: _logout,
                           icon: const Icon(Icons.logout),
                           label: const Text('Logout'),
-                        ),'''}
-                ],
-                ),
-               ),
+                        ),
+                        ],
+                        ),
+                        ),
+                        '''}
+                
               ],
               ),
             );
