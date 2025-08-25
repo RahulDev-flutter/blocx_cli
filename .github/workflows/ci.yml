@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   test:
     name: Test RJ BlocX CLI
@@ -14,6 +18,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
@@ -34,8 +41,12 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
-          git diff --staged --quiet || git commit -m "Auto-format code with dart format"
-          git push
+          if ! git diff --staged --quiet; then
+            git commit -m "Auto-format code with dart format"
+            git push origin ${{ github.ref_name }}
+          else
+            echo "No formatting changes needed"
+          fi
 
       # Option 2: Just verify formatting for PRs
       - name: Verify formatting
@@ -65,7 +76,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'  # Updated to a more recent stable version
+          flutter-version: '3.24.0'
 
       - name: Get dependencies
         run: dart pub get
@@ -112,7 +123,7 @@ jobs:
           ./build/rj_blocx --help
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4  # Updated to v4
+        uses: actions/upload-artifact@v4
         with:
           name: rj_blocx-executable
           path: build/rj_blocx
@@ -141,14 +152,14 @@ jobs:
           dart compile exe bin/rj_blocx.dart -o build/rj_blocx-linux
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1  # Updated to more maintained action
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
           name: RJ BlocX CLI ${{ github.ref_name }}
           body: |
-            ## 🚀 RJ BlocX CLI - Created by Rahul Verma
+            ## RJ BlocX CLI - Created by Rahul Verma
             
             ### What's Changed
             
@@ -174,7 +185,7 @@ jobs:
             
             ---
             
-            **Made with ❤️ by Rahul Verma**
+            **Made with love by Rahul Verma**
           files: build/rj_blocx-linux
           draft: false
           prerelease: false
