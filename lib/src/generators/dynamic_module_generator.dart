@@ -125,7 +125,9 @@ class DynamicModuleGenerator {
     final pascalModuleName = CliHelpers.toPascalCase(moduleName);
 
     // Extract API endpoints from config, with fallback to default endpoints
-    final apiEndpoints = config['apiEndpoints'] as Map<String, dynamic>? ?? {};
+    final apiEndpoints = config['apiEndpoints'] is Map<String, dynamic>
+        ? config['apiEndpoints'] as Map<String, dynamic>
+        : <String, dynamic>{};
 
     final repositoryFile = File(
       p.join(repositoryBase, '${snakeModuleName}_repository.dart'),
