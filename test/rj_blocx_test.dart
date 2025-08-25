@@ -1,10 +1,12 @@
 import 'package:test/test.dart';
 
+import 'utils/test_helpers.dart';
+
 // Simple tests that don't require external files initially
 void main() {
   group('RJ BlocX CLI Basic Tests', () {
     test('version string format', () {
-      const version = '2.0.0';
+      const version = '1.0.0';
       expect(version, isNotEmpty);
       expect(version, matches(RegExp(r'^\d+\.\d+\.\d+')));
     });
@@ -23,7 +25,7 @@ void main() {
 
     test('help command format validation', () {
       const helpContent = '''
-🚀 RJ BlocX CLI v2.0.0 - Enhanced Flutter Project Generator
+🚀 RJ BlocX CLI v1.0.0 - Enhanced Flutter Project Generator
    Created with ❤️ by Rahul Verma
 
 COMMANDS:
@@ -42,14 +44,22 @@ COMMANDS:
       // Valid project names
       final validNames = ['my_app', 'user_profile', 'simple', 'app123'];
       for (final name in validNames) {
-        expect(RegExp(r'^[a-z][a-z0-9_]*').hasMatch(name), isTrue,
+        expect(TestHelpers.isValidProjectName(name), isTrue,
             reason: '$name should be valid');
       }
 
       // Invalid project names
-      final invalidNames = ['', 'MyApp', 'my-app', '123app'];
+      final invalidNames = [
+        '',
+        'MyApp',
+        'my-app',
+        '123app',
+        '_myapp',
+        'my__app',
+        'myapp_'
+      ];
       for (final name in invalidNames) {
-        expect(RegExp(r'^[a-z][a-z0-9_]*').hasMatch(name), isFalse,
+        expect(TestHelpers.isValidProjectName(name), isFalse,
             reason: '$name should be invalid');
       }
     });

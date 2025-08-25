@@ -1,6 +1,6 @@
 name: rj_blocx
 description: RJ BlocX - Rahul Verma's powerful Flutter CLI tool for generating projects with BloC architecture, clean code structure, and best practices.
-version: 2.0.0
+version: 1.0.0
 # Remove the deprecated 'author' field
 homepage: https://github.com/RahulDev-flutter/blocx_cli
 repository: https://github.com/RahulDev-flutter/blocx_cli

@@ -32,7 +32,7 @@ void main(List<String> arguments) async {
 
   // Handle version flag
   if (argResults['version']) {
-    print('RJ BlocX CLI version 2.0.0 - Created by Rahul Verma');
+    print('RJ BlocX CLI version 1.0.0 - Created by Rahul Verma');
     exit(0);
   }
 

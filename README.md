@@ -62,7 +62,7 @@ source ~/.bashrc
 
 ```bash
 rj_blocx --version
-# Should output: RJ BlocX CLI version 2.0.0 - Created by Rahul Verma
+# Should output: RJ BlocX CLI version 1.0.0 - Created by Rahul Verma
 ```
 
 ### Create Your First Project
@@ -526,7 +526,7 @@ source ~/.bashrc
 
 ```bash
 blocx --version
-# Should output: BlocX CLI version 2.0.0
+# Should output: BlocX CLI version 1.0.0
 ```
 
 ### Create Your First Project

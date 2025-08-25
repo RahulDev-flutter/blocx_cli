@@ -189,14 +189,17 @@ class ApiConstants {
     // Must start with lowercase letter
     if (!RegExp(r'^[a-z]').hasMatch(name)) return false;
 
-    // Can contain only lowercase letters, numbers, and underscores
-    if (!RegExp(r'^[a-z][a-z0-9_]*').hasMatch(name)) return false;
+    // Can contain only lowercase letters, numbers, and underscores (no hyphens)
+    if (!RegExp(r'^[a-z][a-z0-9_]*$').hasMatch(name)) return false;
 
     // Cannot end with underscore
     if (name.endsWith('_')) return false;
 
     // Cannot have consecutive underscores
     if (name.contains('__')) return false;
+
+    // Cannot contain hyphens (Flutter convention)
+    if (name.contains('-')) return false;
 
     return true;
   }
