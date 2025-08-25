@@ -124,9 +124,13 @@ class DynamicModuleGenerator {
     final snakeModuleName = CliHelpers.toSnakeCase(moduleName);
     final pascalModuleName = CliHelpers.toPascalCase(moduleName);
 
+    // Extract API endpoints from config, with fallback to default endpoints
+    final apiEndpoints = config['apiEndpoints'] as Map<String, dynamic>? ?? {};
+
     final repositoryFile = File(
       p.join(repositoryBase, '${snakeModuleName}_repository.dart'),
     );
+
     await repositoryFile.writeAsString(
       DynamicTemplates.repositoryTemplate(pascalModuleName, snakeModuleName),
     );

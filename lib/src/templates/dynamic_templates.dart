@@ -217,34 +217,12 @@ class ${pascalModuleName}Bloc extends Bloc<${pascalModuleName}Event, ${pascalMod
     String snakeModuleName,
   ) =>
       '''
-import '/../core/network/api_service.dart';
-import '/../core/constants/api_constants.dart';
-import '/../core/errors/failures.dart';
-import '/../core/errors/exceptions.dart';
+import '../../core/network/api_service.dart';
+import '../../core/constants/api_constants.dart';
+import '../../core/errors/failures.dart';
+import '../../core/errors/exceptions.dart';
+import '../../core/utils/either.dart';
 import '../models/${snakeModuleName}_model.dart';
-
-// Either class for error handling
-abstract class Either<L, R> {
-  const Either();
-  
-  T fold<T>(T Function(L) left, T Function(R) right);
-}
-
-class Left<L, R> extends Either<L, R> {
-  final L value;
-  const Left(this.value);
-  
-  @override
-  T fold<T>(T Function(L) left, T Function(R) right) => left(value);
-}
-
-class Right<L, R> extends Either<L, R> {
-  final R value;
-  const Right(this.value);
-  
-  @override
-  T fold<T>(T Function(L) left, T Function(R) right) => right(value);
-}
 
 class ${pascalModuleName}Repository {
   final ApiService _apiService;
@@ -256,9 +234,15 @@ class ${pascalModuleName}Repository {
       final response = await _apiService.get(ApiConstants.${snakeModuleName}List);
       
       if (response.success) {
-        final List<dynamic> data = response.data ?? [];
-        final items = data.map((json) => ${pascalModuleName}Model.fromJson(json)).toList();
-        return Right(items);
+        final data = response.data;
+        if (data is List) {
+          final items = data
+              .map((json) => ${pascalModuleName}Model.fromJson(json as Map<String, dynamic>))
+              .toList();
+          return Right(items);
+        } else {
+          return Left(ServerFailure('Invalid response format'));
+        }
       } else {
         return Left(ServerFailure(response.message ?? 'Failed to load ${snakeModuleName} items'));
       }
@@ -276,8 +260,13 @@ class ${pascalModuleName}Repository {
       );
       
       if (response.success) {
-        final item = ${pascalModuleName}Model.fromJson(response.data);
-        return Right(item);
+        final data = response.data;
+        if (data is Map<String, dynamic>) {
+          final item = ${pascalModuleName}Model.fromJson(data);
+          return Right(item);
+        } else {
+          return Left(ServerFailure('Invalid response format'));
+        }
       } else {
         return Left(ServerFailure(response.message ?? 'Failed to load ${snakeModuleName} item'));
       }
@@ -296,8 +285,13 @@ class ${pascalModuleName}Repository {
       );
       
       if (response.success) {
-        final item = ${pascalModuleName}Model.fromJson(response.data);
-        return Right(item);
+        final responseData = response.data;
+        if (responseData is Map<String, dynamic>) {
+          final item = ${pascalModuleName}Model.fromJson(responseData);
+          return Right(item);
+        } else {
+          return Left(ServerFailure('Invalid response format'));
+        }
       } else {
         return Left(ServerFailure(response.message ?? 'Failed to create ${snakeModuleName} item'));
       }
@@ -316,8 +310,13 @@ class ${pascalModuleName}Repository {
       );
       
       if (response.success) {
-        final item = ${pascalModuleName}Model.fromJson(response.data);
-        return Right(item);
+        final responseData = response.data;
+        if (responseData is Map<String, dynamic>) {
+          final item = ${pascalModuleName}Model.fromJson(responseData);
+          return Right(item);
+        } else {
+          return Left(ServerFailure('Invalid response format'));
+        }
       } else {
         return Left(ServerFailure(response.message ?? 'Failed to update ${snakeModuleName} item'));
       }
