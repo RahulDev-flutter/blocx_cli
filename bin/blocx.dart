@@ -8,11 +8,13 @@ import 'package:args/args.dart';
 import 'package:rj_blocx/src/commands/add_package_command.dart';
 import 'package:rj_blocx/src/commands/create_command.dart';
 import 'package:rj_blocx/src/commands/generate_command.dart';
+import 'package:rj_blocx/src/commands/init_command.dart';
 import 'package:rj_blocx/src/utils/cli_helpers.dart';
 
 void main(List<String> arguments) async {
   final parser = ArgParser()
     ..addCommand('create')
+    ..addCommand('init')
     ..addCommand('add')
     ..addCommand('generate')
     ..addFlag('help',
@@ -38,6 +40,9 @@ void main(List<String> arguments) async {
     switch (argResults.command?.name) {
       case 'create':
         await _handleCreateCommand(argResults.command!);
+        break;
+      case 'init':
+        await _handleInitCommand(argResults.command!);
         break;
       case 'add':
         await _handleAddCommand(argResults.command!);
@@ -65,6 +70,12 @@ Future<void> _handleCreateCommand(ArgResults command) async {
   final projectName = command.rest.first;
   final createCommand = CreateCommand();
   await createCommand.execute(projectName);
+}
+
+Future<void> _handleInitCommand(ArgResults command) async {
+  print('🏗️  Initializing RJ BlocX architecture in existing project...');
+  final initCommand = InitCommand();
+  await initCommand.execute();
 }
 
 Future<void> _handleAddCommand(ArgResults command) async {
@@ -149,6 +160,10 @@ void _showHelp() {
   print('');
   print(
       '  create <project_name>              Create a new Flutter project with Bloc architecture');
+  print(
+      '  init                               Initialize RJ BlocX architecture in existing project');
+  print(
+      '  init                               Initialize RJ BlocX architecture in existing project');
   print('  add package <package_name>         Add a single Flutter package');
   print(
       '  add packages                       Add multiple packages interactively');
@@ -173,9 +188,11 @@ void _showHelp() {
   print('  ✅ CamelCase formatting for class names');
   print('  ✅ Package management');
   print('  ✅ Dynamic module/screen generation');
+  print('  ✅ Initialize architecture in existing projects');
   print('');
   print('EXAMPLES:');
   print('  rj_blocx create my_awesome_app');
+  print('  rj_blocx init');
   print('  rj_blocx add package shared_preferences');
   print('  rj_blocx add packages');
   print('  rj_blocx generate module profile');
