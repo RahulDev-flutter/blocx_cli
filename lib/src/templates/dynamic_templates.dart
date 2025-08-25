@@ -267,7 +267,7 @@ class ${pascalModuleName}Repository {
           return Left(ServerFailure('Invalid response format'));
         }
       } else {
-        return Left(ServerFailure(response.message ?? 'Failed to load ${snakeModuleName} items'));
+        return Left(ServerFailure(response.message ?? 'Failed to load $snakeModuleName items'));
       }
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -291,7 +291,7 @@ class ${pascalModuleName}Repository {
           return Left(ServerFailure('Invalid response format'));
         }
       } else {
-        return Left(ServerFailure(response.message ?? 'Failed to load ${snakeModuleName} item'));
+        return Left(ServerFailure(response.message ?? 'Failed to load $snakeModuleName item'));
       }
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -316,7 +316,7 @@ class ${pascalModuleName}Repository {
           return Left(ServerFailure('Invalid response format'));
         }
       } else {
-        return Left(ServerFailure(response.message ?? 'Failed to create ${snakeModuleName} item'));
+        return Left(ServerFailure(response.message ?? 'Failed to create $snakeModuleName item'));
       }
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -341,7 +341,7 @@ class ${pascalModuleName}Repository {
           return Left(ServerFailure('Invalid response format'));
         }
       } else {
-        return Left(ServerFailure(response.message ?? 'Failed to update ${snakeModuleName} item'));
+        return Left(ServerFailure(response.message ?? 'Failed to update $snakeModuleName item'));
       }
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -359,7 +359,7 @@ class ${pascalModuleName}Repository {
       if (response.success) {
         return const Right(null);
       } else {
-        return Left(ServerFailure(response.message ?? 'Failed to delete ${snakeModuleName} item'));
+        return Left(ServerFailure(response.message ?? 'Failed to delete $snakeModuleName item'));
       }
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));

@@ -124,11 +124,6 @@ class DynamicModuleGenerator {
     final snakeModuleName = CliHelpers.toSnakeCase(moduleName);
     final pascalModuleName = CliHelpers.toPascalCase(moduleName);
 
-    // Extract API endpoints from config, with fallback to default endpoints
-    final apiEndpoints = config['apiEndpoints'] is Map<String, dynamic>
-        ? config['apiEndpoints'] as Map<String, dynamic>
-        : <String, dynamic>{};
-
     final repositoryFile = File(
       p.join(repositoryBase, '${snakeModuleName}_repository.dart'),
     );
@@ -223,10 +218,8 @@ class DynamicModuleGenerator {
     final lastImportIndex = updatedContent.lastIndexOf("import '../modules/");
     if (lastImportIndex != -1) {
       final endOfLastImport = updatedContent.indexOf('\n', lastImportIndex);
-      updatedContent = updatedContent.substring(0, endOfLastImport) +
-          '\n$repositoryImport' +
-          '\n$importStatement' +
-          updatedContent.substring(endOfLastImport);
+      updatedContent =
+          '${updatedContent.substring(0, endOfLastImport)}\n$repositoryImport\n$importStatement${updatedContent.substring(endOfLastImport)}';
     }
 
     // Add repository registration
@@ -237,9 +230,8 @@ class DynamicModuleGenerator {
         repositoriesCommentIndex,
       );
       if (nextBlankLine != -1) {
-        updatedContent = updatedContent.substring(0, nextBlankLine) +
-            '\n$repositoryRegistration' +
-            updatedContent.substring(nextBlankLine);
+        updatedContent =
+            '${updatedContent.substring(0, nextBlankLine)}\n$repositoryRegistration${updatedContent.substring(nextBlankLine)}';
       }
     }
 
@@ -248,9 +240,8 @@ class DynamicModuleGenerator {
     if (blocsCommentIndex != -1) {
       final nextClosingBrace = updatedContent.indexOf('\n}', blocsCommentIndex);
       if (nextClosingBrace != -1) {
-        updatedContent = updatedContent.substring(0, nextClosingBrace) +
-            '\n$blocRegistration' +
-            updatedContent.substring(nextClosingBrace);
+        updatedContent =
+            '${updatedContent.substring(0, nextClosingBrace)}\n$blocRegistration${updatedContent.substring(nextClosingBrace)}';
       }
     }
 

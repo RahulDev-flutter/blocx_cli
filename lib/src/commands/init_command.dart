@@ -108,25 +108,6 @@ class Right<L, R> extends Either<L, R> {
 ''');
   }
 
-  Future<void> _generateApiResponse() async {
-    final file = File('lib/core/network/api_response.dart');
-    await file.writeAsString('''
-class ApiResponse {
-  final bool success;
-  final dynamic data;
-  final String? message;
-  final int statusCode;
-  
-  ApiResponse({
-    required this.success,
-    this.data,
-    this.message,
-    required this.statusCode,
-  });
-}
-''');
-  }
-
   Future<void> _generateDependencyInjection(Map<String, dynamic> config) async {
     final file = File('lib/core/di/dependency_injection.dart');
     await file.writeAsString('''

@@ -44,7 +44,7 @@ class _${CliHelpers.toPascalCase(screenName)}State extends State<${CliHelpers.to
           if (state is AuthError) {
             AppHelpers.showSnackBar(context, state.message, isError: true);
           } else if (state is AuthAuthenticated) {
-            AppHelpers.showSnackBar(context, '${title} successful!');
+            AppHelpers.showSnackBar(context, '$title successful!');
             Navigator.pushReplacementNamed(context, '/home');
           }
         },

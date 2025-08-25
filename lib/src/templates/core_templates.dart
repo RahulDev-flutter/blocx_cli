@@ -585,7 +585,7 @@ class Validators {
     }
     
     // Only allow letters, spaces, and common name characters
-    if (!RegExp(r"^[a-zA-Z\\s\\-\\.\\\']+\$").hasMatch(value)) {
+    if (!RegExp(r"^[a-zA-Z\\s\\-\\.\\']+\$").hasMatch(value)) {
       return 'Name can only contain letters, spaces, hyphens, and apostrophes';
     }
     

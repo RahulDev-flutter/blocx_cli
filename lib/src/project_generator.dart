@@ -259,8 +259,9 @@ Thumbs.db
     if (apiClient == 'http') enabledPackages.add('http');
     if (packages['cache'] == true) enabledPackages.add('hive_flutter');
     if (packages['imagePicker'] == true) enabledPackages.add('image_picker');
-    if (packages['permissions'] == true)
+    if (packages['permissions'] == true) {
       enabledPackages.add('permission_handler');
+    }
 
     final content = '''
 # ${CliHelpers.toPascalCase(projectName)}

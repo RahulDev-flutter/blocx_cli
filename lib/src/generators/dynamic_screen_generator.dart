@@ -90,7 +90,6 @@ class DynamicScreenGenerator {
     String moduleName,
     String screenName,
   ) {
-    final routePath = p.join(projectPath, 'lib', 'app', 'app_router.dart');
     final snakeScreenName = CliHelpers.toSnakeCase(screenName);
     final snakeModuleName = CliHelpers.toSnakeCase(moduleName);
     final pascalScreenName = CliHelpers.toPascalCase(screenName);
