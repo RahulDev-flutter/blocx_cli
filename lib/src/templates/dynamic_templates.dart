@@ -360,28 +360,35 @@ class ${pascalModuleName}Model extends Equatable {
   final String id;
   final String title;
   final String? description;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   const ${pascalModuleName}Model({
     required this.id,
     required this.title,
     this.description,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory ${pascalModuleName}Model.fromJson(Map<String, dynamic> json) {
     return ${pascalModuleName}Model(
-      id: json['id'] ?? '',
-      title: json['title'] ?? '',
-      description: json['description'],
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString(),
       createdAt: json['created_at'] != null 
-          ? DateTime.parse(json['created_at']) 
-          : DateTime.now(),
+          ? DateTime.tryParse(json['created_at'].toString())
+          : null,
       updatedAt: json['updated_at'] != null 
-          ? DateTime.parse(json['updated_at']) 
-          : DateTime.now(),
+          ? DateTime.tryParse(json['updated_at'].toString())
+          : null,
+    );
+  }
+
+  factory ${pascalModuleName}Model.empty() {
+    return const ${pascalModuleName}Model(
+      id: '',
+      title: '',
     );
   }
 
@@ -389,9 +396,9 @@ class ${pascalModuleName}Model extends Equatable {
     return {
       'id': id,
       'title': title,
-      'description': description,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+      if (description != null) 'description': description,
+      if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
+      if (updatedAt != null) 'updated_at': updatedAt!.toIso8601String(),
     };
   }
 
@@ -409,6 +416,17 @@ class ${pascalModuleName}Model extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
+  }
+
+  bool get isValid => id.isNotEmpty && title.isNotEmpty;
+
+  bool get hasDescription => description != null && description!.isNotEmpty;
+
+  bool get isNew => createdAt == null;
+
+  @override
+  String toString() {
+    return '${pascalModuleName}Model(id: \$id, title: \$title, description: \$description, createdAt: \$createdAt, updatedAt: \$updatedAt)';
   }
 
   @override
