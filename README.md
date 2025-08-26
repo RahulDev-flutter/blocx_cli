@@ -925,6 +925,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ by developers, for developers**
+**Made with ❤️ by Rahul Verma, for developers**
 
 Transform your Flutter development workflow with BlocX CLI! 🚀
