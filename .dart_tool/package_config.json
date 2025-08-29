@@ -315,6 +315,6 @@
     }
   ],
   "generator": "pub",
-  "generatorVersion": "3.9.1",
+  "generatorVersion": "3.9.2",
   "pubCache": "file:///home/runner/.pub-cache"
 }
