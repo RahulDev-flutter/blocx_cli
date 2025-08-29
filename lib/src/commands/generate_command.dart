@@ -302,13 +302,7 @@ class GenerateCommand {
       // Generate import statements
       final imports = screens
           .map((screen) =>
-              "import '../modules/${CliHelpers.toSnakeCase(moduleName)}/screens/${CliHelpers.toSnakeCase(screen)}.dart';")
-          .join('\n');
-
-      // Generate route constants
-      final routeConstants = screens
-          .map((screen) =>
-              "  static const String ${CliHelpers.toCamelCase(screen)}Route = '/${CliHelpers.toSnakeCase(screen)}';")
+              "import '../modules/${CliHelpers.toSnakeCase(moduleName)}/screens/${CliHelpers.toSnakeCase(screen)}_screen.dart';")
           .join('\n');
 
       // Generate route cases
@@ -367,7 +361,7 @@ class GenerateCommand {
 
       // Generate import statement
       final import =
-          "import '../modules/${CliHelpers.toSnakeCase(moduleName)}/screens/${CliHelpers.toSnakeCase(screenName)}.dart';";
+          "import '../modules/${CliHelpers.toSnakeCase(moduleName)}/screens/${CliHelpers.toSnakeCase(screenName)}_screen.dart';";
 
       // Generate route case
       final routeCase =
@@ -553,7 +547,7 @@ class AppConstants {
           config['repository'] != true &&
           config['models'] != true;
       final prefix = isLast ? '│   └──' : '│   ├──';
-      print('$prefix ${CliHelpers.toSnakeCase(screens[i])}.dart');
+      print('$prefix ${CliHelpers.toSnakeCase(screens[i])}_screen.dart');
     }
 
     if (config['repository'] == true) {
@@ -603,7 +597,7 @@ class AppConstants {
 
     CliHelpers.printSubHeader('Generated File');
     final screenFile =
-        'lib/modules/${CliHelpers.toSnakeCase(moduleName)}/screens/${CliHelpers.toSnakeCase(screenName)}.dart';
+        'lib/modules/${CliHelpers.toSnakeCase(moduleName)}/screens/${CliHelpers.toSnakeCase(screenName)}_screen.dart';
     CliHelpers.printInfo('📄 $screenFile');
 
     CliHelpers.printEmptyLine();
