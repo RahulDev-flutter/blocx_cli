@@ -153,13 +153,13 @@ import 'package:flutter/material.dart';
 $blocImport
 $modelImport
 
-class ${CliHelpers2.toPascalCase(screenName)}Screen extends StatelessWidget {
-  const ${CliHelpers2.toPascalCase(screenName)}Screen({super.key});
+class ${CliHelpers.toPascalCase(screenName)}Screen extends StatelessWidget {
+  const ${CliHelpers.toPascalCase(screenName)}Screen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ${needsBlocProvider ? """BlocProvider(
-      create: (context) => ${CliHelpers2.toPascalCase(moduleName)}Bloc()..add(Load${CliHelpers2.toPascalCase(moduleName)}List()),
+      create: (context) => ${CliHelpers.toPascalCase(moduleName)}Bloc()..add(Load${CliHelpers.toPascalCase(moduleName)}List()),
       child: """ : ""}Scaffold($appBarWidget
       body: $screenContent,$fabWidget$bottomNavWidget
     )${needsBlocProvider ? ')' : ''};
@@ -192,11 +192,11 @@ class ${CliHelpers2.toPascalCase(screenName)}Screen extends StatelessWidget {
   }
 
   String _generateListContent(String moduleName, bool hasModels) {
-    return """BlocBuilder<${CliHelpers2.toPascalCase(moduleName)}Bloc, ${CliHelpers2.toPascalCase(moduleName)}State>(
+    return """BlocBuilder<${CliHelpers.toPascalCase(moduleName)}Bloc, ${CliHelpers.toPascalCase(moduleName)}State>(
         builder: (context, state) {
-          if (state is ${CliHelpers2.toPascalCase(moduleName)}Loading) {
+          if (state is ${CliHelpers.toPascalCase(moduleName)}Loading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is ${CliHelpers2.toPascalCase(moduleName)}Error) {
+          } else if (state is ${CliHelpers.toPascalCase(moduleName)}Error) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -215,15 +215,15 @@ class ${CliHelpers2.toPascalCase(screenName)}Screen extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<${CliHelpers2.toPascalCase(moduleName)}Bloc>()
-                          .add(Refresh${CliHelpers2.toPascalCase(moduleName)}List());
+                      context.read<${CliHelpers.toPascalCase(moduleName)}Bloc>()
+                          .add(Refresh${CliHelpers.toPascalCase(moduleName)}List());
                     },
                     child: const Text('Retry'),
                   ),
                 ],
               ),
             );
-          } else if (state is ${CliHelpers2.toPascalCase(moduleName)}Loaded) {
+          } else if (state is ${CliHelpers.toPascalCase(moduleName)}Loaded) {
             if (state.items.isEmpty) {
               return Center(
                 child: Column(
@@ -251,8 +251,8 @@ class ${CliHelpers2.toPascalCase(screenName)}Screen extends StatelessWidget {
             
             return RefreshIndicator(
               onRefresh: () async {
-                context.read<${CliHelpers2.toPascalCase(moduleName)}Bloc>()
-                    .add(Refresh${CliHelpers2.toPascalCase(moduleName)}List());
+                context.read<${CliHelpers.toPascalCase(moduleName)}Bloc>()
+                    .add(Refresh${CliHelpers.toPascalCase(moduleName)}List());
               },
               child: ListView.builder(
                 padding: const EdgeInsets.all(8),
@@ -277,7 +277,7 @@ class ${CliHelpers2.toPascalCase(screenName)}Screen extends StatelessWidget {
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
                         // TODO: Navigate to detail screen
-                        // Navigator.pushNamed(context, AppConstants.${CliHelpers2.toCamelCase(moduleName)}DetailRoute, arguments: item);
+                        // Navigator.pushNamed(context, AppConstants.${CliHelpers.toCamelCase(moduleName)}DetailRoute, arguments: item);
                       },
                     ),
                   );
@@ -291,11 +291,11 @@ class ${CliHelpers2.toPascalCase(screenName)}Screen extends StatelessWidget {
   }
 
   String _generateDetailContent(String moduleName, bool hasModels) {
-    return """BlocBuilder<${CliHelpers2.toPascalCase(moduleName)}Bloc, ${CliHelpers2.toPascalCase(moduleName)}State>(
+    return """BlocBuilder<${CliHelpers.toPascalCase(moduleName)}Bloc, ${CliHelpers.toPascalCase(moduleName)}State>(
         builder: (context, state) {
-          if (state is ${CliHelpers2.toPascalCase(moduleName)}Loading) {
+          if (state is ${CliHelpers.toPascalCase(moduleName)}Loading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is ${CliHelpers2.toPascalCase(moduleName)}Error) {
+          } else if (state is ${CliHelpers.toPascalCase(moduleName)}Error) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -315,7 +315,7 @@ class ${CliHelpers2.toPascalCase(screenName)}Screen extends StatelessWidget {
                 ],
               ),
             );
-          } else if (state is ${CliHelpers2.toPascalCase(moduleName)}ItemSelected) {
+          } else if (state is ${CliHelpers.toPascalCase(moduleName)}ItemSelected) {
             final item = state.item;
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -470,8 +470,8 @@ class ${CliHelpers2.toPascalCase(screenName)}Screen extends StatelessWidget {
                               onPressed: () {
                                 // TODO: Implement form submission
                                 ${hasBloc ? '''
-                                // context.read<${CliHelpers2.toPascalCase(moduleName)}Bloc>()
-                                //     .add(Create${CliHelpers2.toPascalCase(moduleName)}Event(data));''' : ''}
+                                // context.read<${CliHelpers.toPascalCase(moduleName)}Bloc>()
+                                //     .add(Create${CliHelpers.toPascalCase(moduleName)}Event(data));''' : ''}
                               },
                               child: const Text('Submit'),
                             ),
