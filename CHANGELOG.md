@@ -258,4 +258,4 @@ Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of
 For support and questions:
 - 🐛 **Report Issues**: [GitHub Issues](https://github.com/RahulDev-flutter/blocx_cli/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/RahulDev-flutter/blocx_cli/discussions)
-- 📧 **Email**: your.email@example.com
+- 📧 **Email**: rahulverma0549@gmail.com
