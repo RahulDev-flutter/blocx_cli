@@ -43,7 +43,7 @@ seconds!
 **Global Installation (Recommended):**
 
 ```bash
-dart pub global activate --source git https://github.com/RahulDev-flutter/blocx_cli.git
+dart pub global activate rj_blocx
 ```
 
 **Add to PATH:** (if not already added)
@@ -507,7 +507,7 @@ Transform your Flutter development workflow with RJ BlocX CLI!
 **Global Installation (Recommended):**
 
 ```bash
-dart pub global activate --source git https://github.com/RahulDev-flutter/blocx_cli.git
+dart pub global activate rj_blocx
 ```
 
 **Add to PATH:** (if not already added)
