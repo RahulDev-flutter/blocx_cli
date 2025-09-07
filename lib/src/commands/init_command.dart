@@ -963,17 +963,19 @@ class MyApp extends StatelessWidget {
     // Check if assets section already exists
     if (!content.contains('assets:')) {
       final lines = content.split('\n');
-      final flutterIndex = lines.indexWhere((line) => line.trim() == 'flutter:');
+      final flutterIndex =
+          lines.indexWhere((line) => line.trim() == 'flutter:');
 
       if (flutterIndex != -1) {
         // Find the end of the flutter section
         int insertIndex = lines.length;
-        
+
         // Insert assets at the end of the flutter section, before any empty lines
-        while (insertIndex > flutterIndex + 1 && lines[insertIndex - 1].trim().isEmpty) {
+        while (insertIndex > flutterIndex + 1 &&
+            lines[insertIndex - 1].trim().isEmpty) {
           insertIndex--;
         }
-        
+
         // Insert assets section at end of file (it will be properly indented under flutter)
         lines.insert(insertIndex, '  assets:');
         lines.insert(insertIndex + 1, '    - assets/images/');

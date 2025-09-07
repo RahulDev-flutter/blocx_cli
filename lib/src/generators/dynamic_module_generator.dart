@@ -4,6 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:rj_blocx/src/templates/conditional_module_template.dart';
 
 import '../utils/cli_helpers.dart';
+import '../utils/file_updater_utility.dart';
 
 class DynamicModuleGenerator {
   Future<void> generate(
@@ -35,6 +36,20 @@ class DynamicModuleGenerator {
 
     if (config['apiEndpoints'] == true) {
       await _generateApiEndpoints(moduleDir, moduleName);
+    }
+
+    // Update service locator with new module dependencies
+    if (config['repository'] == true) {
+      final projectRoot = Directory(projectPath);
+      final currentDir = Directory.current;
+      Directory.current = projectRoot;
+      
+      try {
+        await FileUpdaterUtility.updateServiceLocator(moduleName);
+        await FileUpdaterUtility.updateMainWithModule(moduleName, hasRepository: true);
+      } finally {
+        Directory.current = currentDir;
+      }
     }
   }
 
@@ -184,8 +199,8 @@ class DynamicModuleGenerator {
     final constructorParam = hasRepository ? 'this._repository' : '';
 
     final repositoryCall = hasRepository
-        ? '_repository.get${CliHelpers.toPascalCase(moduleName)}List()'
-        : '_getMockData()';
+        ? 'await _repository.get${CliHelpers.toPascalCase(moduleName)}List()'
+        : 'await _getMockData()';
 
     return """
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -384,16 +399,16 @@ class ${CliHelpers.toPascalCase(moduleName)}Repository {
   
   Future<$listReturnType> get${CliHelpers.toPascalCase(moduleName)}List() async {
     try {
-      final response = await _apiService.get('/api/${CliHelpers.toSnakeCase(moduleName)}/list');
+      final response = await _apiService.get<Map<String, dynamic>>('/api/${CliHelpers.toSnakeCase(moduleName)}/list');
       ${hasModels ? '''
-      if (response.data is List) {
-        return (response.data as List)
-            .map((item) => ${CliHelpers.toPascalCase(moduleName)}Model.fromJson(item))
+      if (response.data != null && response.data!['items'] is List) {
+        return (response.data!['items'] as List)
+            .map((item) => ${CliHelpers.toPascalCase(moduleName)}Model.fromJson(item as Map<String, dynamic>))
             .toList();
       }
       return [];''' : '''
-      if (response.data is List) {
-        return (response.data as List)
+      if (response.data != null && response.data!['items'] is List) {
+        return (response.data!['items'] as List)
             .map((item) => item as Map<String, dynamic>)
             .toList();
       }
@@ -405,10 +420,16 @@ class ${CliHelpers.toPascalCase(moduleName)}Repository {
   
   Future<$modelType> get${CliHelpers.toPascalCase(moduleName)}ById(String id) async {
     try {
-      final response = await _apiService.get('/api/${CliHelpers.toSnakeCase(moduleName)}/\$id');
+      final response = await _apiService.get<Map<String, dynamic>>('/api/${CliHelpers.toSnakeCase(moduleName)}/\$id');
       ${hasModels ? '''
-      return ${CliHelpers.toPascalCase(moduleName)}Model.fromJson(response.data);''' : '''
-      return response.data as Map<String, dynamic>;'''}
+      if (response.data != null) {
+        return ${CliHelpers.toPascalCase(moduleName)}Model.fromJson(response.data!);
+      }
+      throw Exception('No data received');''' : '''
+      if (response.data != null) {
+        return response.data!;
+      }
+      throw Exception('No data received');'''}
     } catch (e) {
       throw Exception('Failed to fetch ${CliHelpers.toSnakeCase(moduleName)}: \$e');
     }
@@ -417,16 +438,22 @@ class ${CliHelpers.toPascalCase(moduleName)}Repository {
   Future<$modelType> create${CliHelpers.toPascalCase(moduleName)}($modelType ${CliHelpers.toCamelCase(moduleName)}) async {
     try {
       ${hasModels ? '''
-      final response = await _apiService.post(
+      final response = await _apiService.post<Map<String, dynamic>>(
         '/api/${CliHelpers.toSnakeCase(moduleName)}',
         data: ${CliHelpers.toCamelCase(moduleName)}.toJson(),
       );
-      return ${CliHelpers.toPascalCase(moduleName)}Model.fromJson(response.data);''' : '''
-      final response = await _apiService.post(
+      if (response.data != null) {
+        return ${CliHelpers.toPascalCase(moduleName)}Model.fromJson(response.data!);
+      }
+      throw Exception('No data received');''' : '''
+      final response = await _apiService.post<Map<String, dynamic>>(
         '/api/${CliHelpers.toSnakeCase(moduleName)}',
         data: ${CliHelpers.toCamelCase(moduleName)},
       );
-      return response.data as Map<String, dynamic>;'''}
+      if (response.data != null) {
+        return response.data!;
+      }
+      throw Exception('No data received');'''}
     } catch (e) {
       throw Exception('Failed to create ${CliHelpers.toSnakeCase(moduleName)}: \$e');
     }
@@ -435,16 +462,22 @@ class ${CliHelpers.toPascalCase(moduleName)}Repository {
   Future<$modelType> update${CliHelpers.toPascalCase(moduleName)}(String id, $modelType ${CliHelpers.toCamelCase(moduleName)}) async {
     try {
       ${hasModels ? '''
-      final response = await _apiService.put(
+      final response = await _apiService.put<Map<String, dynamic>>(
         '/api/${CliHelpers.toSnakeCase(moduleName)}/\$id',
         data: ${CliHelpers.toCamelCase(moduleName)}.toJson(),
       );
-      return ${CliHelpers.toPascalCase(moduleName)}Model.fromJson(response.data);''' : '''
-      final response = await _apiService.put(
+      if (response.data != null) {
+        return ${CliHelpers.toPascalCase(moduleName)}Model.fromJson(response.data!);
+      }
+      throw Exception('No data received');''' : '''
+      final response = await _apiService.put<Map<String, dynamic>>(
         '/api/${CliHelpers.toSnakeCase(moduleName)}/\$id',
         data: ${CliHelpers.toCamelCase(moduleName)},
       );
-      return response.data as Map<String, dynamic>;'''}
+      if (response.data != null) {
+        return response.data!;
+      }
+      throw Exception('No data received');'''}
     } catch (e) {
       throw Exception('Failed to update ${CliHelpers.toSnakeCase(moduleName)}: \$e');
     }
@@ -452,7 +485,7 @@ class ${CliHelpers.toPascalCase(moduleName)}Repository {
   
   Future<bool> delete${CliHelpers.toPascalCase(moduleName)}(String id) async {
     try {
-      await _apiService.delete('/api/${CliHelpers.toSnakeCase(moduleName)}/\$id');
+      await _apiService.delete<void>('/api/${CliHelpers.toSnakeCase(moduleName)}/\$id');
       return true;
     } catch (e) {
       throw Exception('Failed to delete ${CliHelpers.toSnakeCase(moduleName)}: \$e');
