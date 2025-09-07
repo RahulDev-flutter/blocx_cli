@@ -84,60 +84,103 @@ class CreateCommand {
   }
 
   Future<Map<String, dynamic>> _getUserPreferences() async {
-    CliHelpers.printSubHeader('Configuration');
+    // Check if we're in a non-interactive environment
+    if (!stdin.hasTerminal || !stdout.hasTerminal) {
+      CliHelpers.printWarning(
+          'Non-interactive mode detected - using default configuration');
+      return {
+        'apiClient': 'dio',
+        'modules': {'profile': true, 'settings': true},
+        'packages': {
+          'cache': false,
+          'imagePicker': false,
+          'permissions': false,
+        },
+      };
+    }
 
-    // API Client Selection
-    print('🌐 Which API client would you like to use?');
-    CliHelpers.printListItem(
-      '1. Dio (Recommended - More features, better error handling)',
-    );
-    CliHelpers.printListItem('2. HTTP (Simple, lightweight)');
+    try {
+      CliHelpers.printSubHeader('Configuration');
 
-    final apiChoice = prompts.get(
-      'Enter your choice (1 or 2)',
-      defaultsTo: '1',
-    );
-    final selectedApi = apiChoice == '2' ? 'http' : 'dio';
+      // API Client Selection
+      print('🌐 Which API client would you like to use?');
+      CliHelpers.printListItem(
+        '1. Dio (Recommended - More features, better error handling)',
+      );
+      CliHelpers.printListItem('2. HTTP (Simple, lightweight)');
 
-    CliHelpers.printEmptyLine();
+      final apiChoice = prompts.get(
+        'Enter your choice (1 or 2)',
+        defaultsTo: '1',
+      );
+      final selectedApi = apiChoice == '2' ? 'http' : 'dio';
 
-    // Additional modules
-    print('📦 Would you like additional modules?');
-    final wantProfile = prompts.getBool(
-      'Add Profile module?',
-      defaultsTo: true,
-    );
-    final wantSettings = prompts.getBool(
-      'Add Settings module?',
-      defaultsTo: true,
-    );
+      CliHelpers.printEmptyLine();
 
-    CliHelpers.printEmptyLine();
+      // Additional modules
+      print('📦 Would you like additional modules?');
+      final wantProfile = prompts.getBool(
+        'Add Profile module?',
+        defaultsTo: true,
+      );
+      final wantSettings = prompts.getBool(
+        'Add Settings module?',
+        defaultsTo: true,
+      );
 
-    // Additional packages
-    print('🔧 Additional packages:');
-    final wantCache = prompts.getBool(
-      'Add caching support (Hive)?',
-      defaultsTo: false,
-    );
-    final wantImagePicker = prompts.getBool(
-      'Add image picker support?',
-      defaultsTo: false,
-    );
-    final wantPermissions = prompts.getBool(
-      'Add permissions handling?',
-      defaultsTo: false,
-    );
+      CliHelpers.printEmptyLine();
 
-    return {
-      'apiClient': selectedApi,
-      'modules': {'profile': wantProfile, 'settings': wantSettings},
-      'packages': {
-        'cache': wantCache,
-        'imagePicker': wantImagePicker,
-        'permissions': wantPermissions,
-      },
-    };
+      // Additional packages
+      print('🔧 Additional packages:');
+      final wantCache = prompts.getBool(
+        'Add caching support (Hive)?',
+        defaultsTo: false,
+      );
+      final wantImagePicker = prompts.getBool(
+        'Add image picker support?',
+        defaultsTo: false,
+      );
+      final wantPermissions = prompts.getBool(
+        'Add permissions handling?',
+        defaultsTo: false,
+      );
+
+      return {
+        'apiClient': selectedApi,
+        'modules': {'profile': wantProfile, 'settings': wantSettings},
+        'packages': {
+          'cache': wantCache,
+          'imagePicker': wantImagePicker,
+          'permissions': wantPermissions,
+        },
+      };
+    } on StdinException {
+      // Handle StdinException specifically for non-interactive environments
+      CliHelpers.printWarning(
+          'Non-interactive environment detected - using default configuration');
+      return {
+        'apiClient': 'dio',
+        'modules': {'profile': true, 'settings': true},
+        'packages': {
+          'cache': false,
+          'imagePicker': false,
+          'permissions': false,
+        },
+      };
+    } catch (e) {
+      // If any other error occurs, use default configuration
+      CliHelpers.printWarning(
+          'Error during configuration: $e - using default configuration');
+      return {
+        'apiClient': 'dio',
+        'modules': {'profile': true, 'settings': true},
+        'packages': {
+          'cache': false,
+          'imagePicker': false,
+          'permissions': false,
+        },
+      };
+    }
   }
 
   void _showCompletion(String projectName, Map<String, dynamic> preferences) {

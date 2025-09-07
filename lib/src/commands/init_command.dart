@@ -108,6 +108,43 @@ class Right<L, R> extends Either<L, R> {
 ''');
   }
 
+  Future<void> _generateApiResponse() async {
+    final file = File('lib/core/network/api_response.dart');
+    await file.writeAsString('''
+class ApiResponse {
+  final bool success;
+  final dynamic data;
+  final String? message;
+  final int statusCode;
+  
+  const ApiResponse({
+    required this.success,
+    this.data,
+    this.message,
+    required this.statusCode,
+  });
+  
+  factory ApiResponse.fromJson(Map<String, dynamic> json) {
+    return ApiResponse(
+      success: json['success'] ?? false,
+      data: json['data'],
+      message: json['message'],
+      statusCode: json['status_code'] ?? 0,
+    );
+  }
+  
+  Map<String, dynamic> toJson() {
+    return {
+      'success': success,
+      'data': data,
+      'message': message,
+      'status_code': statusCode,
+    };
+  }
+}
+''');
+  }
+
   Future<void> _generateDependencyInjection(Map<String, dynamic> config) async {
     final file = File('lib/core/di/dependency_injection.dart');
     await file.writeAsString('''
@@ -500,35 +537,46 @@ class _LoginScreenState extends State<LoginScreen> {
     print('');
     print('🛠️  Configure your project:');
 
-    // API Client selection
-    print('Select API client:');
-    print('  1. HTTP (dart:io)');
-    print('  2. Dio');
-    stdout.write('Choice (1): ');
-    final apiChoice = stdin.readLineSync()?.trim() ?? '1';
-    final apiClient = apiChoice == '2' ? 'Dio' : 'HTTP (dart:io)';
+    try {
+      // API Client selection
+      print('Select API client:');
+      print('  1. HTTP (dart:io)');
+      print('  2. Dio');
+      stdout.write('Choice (1): ');
+      final apiChoice = stdin.readLineSync()?.trim() ?? '1';
+      final apiClient = apiChoice == '2' ? 'Dio' : 'HTTP (dart:io)';
 
-    // Include Auth module
-    stdout.write('Include Auth module? (Y/n): ');
-    final authInput = stdin.readLineSync()?.toLowerCase().trim() ?? 'y';
-    final includeAuth = authInput != 'n' && authInput != 'no';
+      // Include Auth module
+      stdout.write('Include Auth module? (Y/n): ');
+      final authInput = stdin.readLineSync()?.toLowerCase().trim() ?? 'y';
+      final includeAuth = authInput != 'n' && authInput != 'no';
 
-    // Include Home module
-    stdout.write('Include Home module? (Y/n): ');
-    final homeInput = stdin.readLineSync()?.toLowerCase().trim() ?? 'y';
-    final includeHome = homeInput != 'n' && homeInput != 'no';
+      // Include Home module
+      stdout.write('Include Home module? (Y/n): ');
+      final homeInput = stdin.readLineSync()?.toLowerCase().trim() ?? 'y';
+      final includeHome = homeInput != 'n' && homeInput != 'no';
 
-    // Include routing
-    stdout.write('Setup routing (go_router)? (Y/n): ');
-    final routingInput = stdin.readLineSync()?.toLowerCase().trim() ?? 'y';
-    final includeRouting = routingInput != 'n' && routingInput != 'no';
+      // Include routing
+      stdout.write('Setup routing (go_router)? (Y/n): ');
+      final routingInput = stdin.readLineSync()?.toLowerCase().trim() ?? 'y';
+      final includeRouting = routingInput != 'n' && routingInput != 'no';
 
-    return {
-      'apiClient': apiClient,
-      'includeAuthModule': includeAuth,
-      'includeHomeModule': includeHome,
-      'includeRouting': includeRouting,
-    };
+      return {
+        'apiClient': apiClient,
+        'includeAuthModule': includeAuth,
+        'includeHomeModule': includeHome,
+        'includeRouting': includeRouting,
+      };
+    } catch (e) {
+      // If interactive input fails, use default configuration
+      print('Using default configuration (non-interactive mode)');
+      return {
+        'apiClient': 'HTTP (dart:io)',
+        'includeAuthModule': true,
+        'includeHomeModule': true,
+        'includeRouting': true,
+      };
+    }
   }
 
   Future<void> _addRequiredPackages(Map<String, dynamic> config) async {
@@ -586,6 +634,7 @@ class _LoginScreenState extends State<LoginScreen> {
     await _generateFailures();
     await _generateExceptions();
     await _generateEither();
+    await _generateApiResponse();
     await _generateApiService(config);
     await _generateDependencyInjection(config);
 
@@ -914,13 +963,21 @@ class MyApp extends StatelessWidget {
     // Check if assets section already exists
     if (!content.contains('assets:')) {
       final lines = content.split('\n');
-      final flutterIndex =
-          lines.indexWhere((line) => line.trim() == 'flutter:');
+      final flutterIndex = lines.indexWhere((line) => line.trim() == 'flutter:');
 
       if (flutterIndex != -1) {
-        lines.insert(flutterIndex + 1, '  assets:');
-        lines.insert(flutterIndex + 2, '    - assets/images/');
-        lines.insert(flutterIndex + 3, '    - assets/icons/');
+        // Find the end of the flutter section
+        int insertIndex = lines.length;
+        
+        // Insert assets at the end of the flutter section, before any empty lines
+        while (insertIndex > flutterIndex + 1 && lines[insertIndex - 1].trim().isEmpty) {
+          insertIndex--;
+        }
+        
+        // Insert assets section at end of file (it will be properly indented under flutter)
+        lines.insert(insertIndex, '  assets:');
+        lines.insert(insertIndex + 1, '    - assets/images/');
+        lines.insert(insertIndex + 2, '    - assets/icons/');
 
         await pubspecFile.writeAsString(lines.join('\n'));
 
