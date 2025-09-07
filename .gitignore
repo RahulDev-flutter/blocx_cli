@@ -1,0 +1,39 @@
+# Dart and Flutter
+.dart_tool/
+.pub-cache/
+build/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Test results
+test_results.json
+coverage/
+
+# Generated files
+pubspec.lock
+
+# Local environment files
+.env
+.env.local
+
+# Temporary files
+*.tmp
+*.temp
+
+# Platform specific
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Build outputs
+dist/
+release/

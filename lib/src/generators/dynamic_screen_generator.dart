@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:rj_blocx/src/templates/conditional-module-template.dart';
+import 'package:rj_blocx/src/templates/conditional_module_template.dart';
 
 import '../utils/cli_helpers.dart';
 
@@ -345,7 +345,7 @@ class ${CliHelpers.toPascalCase(screenName)}Screen extends StatelessWidget {
                                 const Icon(Icons.access_time, size: 16),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Created: \${item.createdAt!.toLocal().toString().split(\' \')[0]}',
+                                  'Created: \${item.createdAt!.toLocal().toString().split(' ')[0]}',
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
@@ -358,7 +358,7 @@ class ${CliHelpers.toPascalCase(screenName)}Screen extends StatelessWidget {
                                 const Icon(Icons.update, size: 16),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Updated: \${item.updatedAt!.toLocal().toString().split(\' \')[0]}',
+                                  'Updated: \${item.updatedAt!.toLocal().toString().split(' ')[0]}',
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],

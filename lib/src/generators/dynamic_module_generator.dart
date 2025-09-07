@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:rj_blocx/src/templates/conditional-module-template.dart';
+import 'package:rj_blocx/src/templates/conditional_module_template.dart';
 
 import '../utils/cli_helpers.dart';
 

@@ -403,7 +403,7 @@ class FileUpdaterUtility {
     print('   4. Connect screens with navigation');
     print('   5. Test your generated module');
 
-    print('\n' + '═' * 50);
+    print('\n${'═' * 50}');
   }
 
   /// Helper method to generate app constants template

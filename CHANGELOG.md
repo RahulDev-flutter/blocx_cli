@@ -121,7 +121,7 @@ RJ BlocX CLI is a personal project created to help Flutter developers build bett
 ### Connect with Rahul
 - 🔗 **GitHub**: [@RahulDev-flutter](https://github.com/RahulDev-flutter)
 - 💼 **LinkedIn**: [Rahul Verma](https://linkedin.com/in/rahul-verma-flutter)
-- 📧 **Email**: rahul.dev.flutter@gmail.com
+- 📧 **Email**: rahulverma0549@gmail.com
 - 🌐 **Portfolio**: [rahulverma.dev](https://rahulverma.dev)
 
 ---
@@ -135,7 +135,7 @@ Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of
 For support and questions:
 - 🐛 **Report Issues**: [GitHub Issues](https://github.com/RahulDev-flutter/blocx_cli/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/RahulDev-flutter/blocx_cli/discussions)
-- 📧 **Email**: rahul.dev.flutter@gmail.com
+- 📧 **Email**: rahulverma0549@gmail.com
 
 ---
 
@@ -182,12 +182,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Template generation bugs
 
 ### Commands Added
-- `blocx create <project_name>` - Interactive project creation
-- `blocx add package <name>` - Add single package
-- `blocx add packages` - Interactive multiple package selection
-- `blocx generate module <name>` - Generate complete module
-- `blocx generate screen <name>` - Generate screen with templates
-- `blocx generate page <name>` - Alias for screen generation
+- `rj_blocx create <project_name>` - Interactive project creation
+- `rj_blocx add package <name>` - Add single package
+- `rj_blocx add packages` - Interactive multiple package selection
+- `rj_blocx generate module <name>` - Generate complete module
+- `rj_blocx generate screen <name>` - Generate screen with templates
+- `rj_blocx generate page <name>` - Alias for screen generation
 
 ### Package Categories
 - State Management (flutter_bloc, provider, riverpod)
