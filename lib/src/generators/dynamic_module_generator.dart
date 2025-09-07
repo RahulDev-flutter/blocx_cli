@@ -43,10 +43,11 @@ class DynamicModuleGenerator {
       final projectRoot = Directory(projectPath);
       final currentDir = Directory.current;
       Directory.current = projectRoot;
-      
+
       try {
         await FileUpdaterUtility.updateServiceLocator(moduleName);
-        await FileUpdaterUtility.updateMainWithModule(moduleName, hasRepository: true);
+        await FileUpdaterUtility.updateMainWithModule(moduleName,
+            hasRepository: true);
       } finally {
         Directory.current = currentDir;
       }
