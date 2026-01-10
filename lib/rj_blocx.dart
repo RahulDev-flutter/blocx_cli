@@ -7,7 +7,7 @@
 library rj_blocx;
 
 // Version information
-const String version = '1.0.1';
+const String version = '1.0.2';
 const String author = 'Rahul Verma';
 const String description =
     'Enhanced Flutter Project Generator with BLoC architecture';

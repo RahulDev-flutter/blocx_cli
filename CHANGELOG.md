@@ -7,6 +7,37 @@ All notable changes to RJ BlocX CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-01-10
+
+### 🐛 Bug Fixes
+- **Version Consistency**: Fixed version mismatch across all files (pubspec.yaml, bin/rj_blocx.dart, lib/rj_blocx.dart)
+- **Missing Method**: Added `toTitleCase()` method to `CliHelpers` class for consistent string conversion
+- **BlocProvider Issue**: Fixed dynamic module generation to use service locator (`sl<>()`) instead of direct instantiation
+- **Import Path Bug**: Corrected service_locator import path in generated modules from `../../app/` to `../../../app/`
+- **Unused Imports**: Removed unnecessary import of `conditional_module_template.dart` in generators
+
+### ✨ Improvements
+- **Code Quality**: All tests passing with zero analyzer errors
+- **Generated Projects**: Projects now compile successfully without manual fixes (except service locator registration)
+- **Documentation**: Added comprehensive END_USER_TESTING_REPORT.md with full testing results
+
+### 📝 Known Issues
+- Profile and Settings modules still require manual service locator registration (will be auto-fixed in v1.0.3)
+- Interactive commands (generate module/screen) require actual terminal
+
+### 🧪 Testing
+- ✅ All 9 unit tests passing
+- ✅ Zero Dart analyzer errors
+- ✅ End-to-end testing completed successfully
+- ✅ Generated projects compile with 0 compilation errors
+
+## [1.0.1] - 2024-12-15
+
+### 📚 Documentation
+- Enhanced README with detailed usage examples
+- Added comprehensive feature documentation
+- Updated installation instructions
+
 ## [1.0.0+1] - 2024-08-29
 ### 📚 Documentation
 - Updated README with more details

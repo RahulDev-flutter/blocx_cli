@@ -1,0 +1,11 @@
+# Exclude development and IDE files from published package
+.idea/
+.dart_tool/
+pubspec.lock
+*.iml
+
+# Exclude test and internal documentation
+FIXES_COMPLETED_REPORT.md
+ISSUES_AND_MISTAKES.md
+TESTING_REPORT.md
+format_code.sh
