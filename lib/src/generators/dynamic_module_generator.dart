@@ -519,7 +519,7 @@ class ${CliHelpers.toPascalCase(moduleName)}Repository {
     final blocImportWithSl = hasRepository
         ? """import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../app/service_locator.dart';
+import '../../../app/service_locator.dart';
 import '../bloc/${CliHelpers.toSnakeCase(moduleName)}_bloc.dart';
 import '../bloc/${CliHelpers.toSnakeCase(moduleName)}_event.dart';
 import '../bloc/${CliHelpers.toSnakeCase(moduleName)}_state.dart';
