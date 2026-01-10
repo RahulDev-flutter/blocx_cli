@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:rj_blocx/src/templates/conditional_module_template.dart';
 
 import '../utils/cli_helpers.dart';
 
@@ -140,7 +139,7 @@ import '../bloc/${CliHelpers.toSnakeCase(moduleName)}_state.dart';"""
     final appBarWidget = hasAppBar
         ? """
       appBar: AppBar(
-        title: Text('${CliHelpers2.toTitleCase(screenName)}'),
+        title: Text('${CliHelpers.toTitleCase(screenName)}'),
         ${_getAppBarActions(screenType)}
       ),"""
         : '';
@@ -423,7 +422,7 @@ class ${CliHelpers.toPascalCase(screenName)}Screen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Create New ${CliHelpers2.toTitleCase(moduleName)}',
+                        'Create New ${CliHelpers.toTitleCase(moduleName)}',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 16),
@@ -496,7 +495,7 @@ class ${CliHelpers.toPascalCase(screenName)}Screen extends StatelessWidget {
             Icon(Icons.dashboard, size: 64),
             SizedBox(height: 16),
             Text(
-              '${CliHelpers2.toTitleCase(screenName)}',
+              '${CliHelpers.toTitleCase(screenName)}',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
@@ -649,7 +648,7 @@ class ${CliHelpers.toPascalCase(screenName)}Screen extends StatelessWidget {
             Icon(Icons.dashboard, size: 64),
             SizedBox(height: 16),
             Text(
-              '${CliHelpers2.toTitleCase(screenName)}',
+              '${CliHelpers.toTitleCase(screenName)}',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),

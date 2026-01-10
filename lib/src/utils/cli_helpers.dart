@@ -194,6 +194,18 @@ class CliHelpers {
     return input[0].toUpperCase() + input.substring(1);
   }
 
+  /// Convert snake_case, kebab-case, or camelCase to Title Case
+  static String toTitleCase(String input) {
+    if (input.isEmpty) return input;
+
+    return input
+        .split(RegExp(r'[_\-\s]+'))
+        .map((word) => word.isNotEmpty
+            ? word[0].toUpperCase() + word.substring(1).toLowerCase()
+            : '')
+        .join(' ');
+  }
+
   /// Create a nicely formatted table
   static void printTable(List<List<String>> rows, {List<String>? headers}) {
     if (rows.isEmpty) return;

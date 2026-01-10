@@ -32,7 +32,7 @@ void main(List<String> arguments) async {
 
   // Handle version flag
   if (argResults['version']) {
-    print('RJ BlocX CLI version 1.0.0+1 - Created by Rahul Verma');
+    print('RJ BlocX CLI version 1.0.1 - Created by Rahul Verma');
     exit(0);
   }
 
@@ -153,7 +153,7 @@ Future<void> _handleGenerateCommand(ArgResults command) async {
 }
 
 void _showHelp() {
-  print('🚀 RJ BlocX CLI v1.0.0+1 - Enhanced Flutter Project Generator');
+  print('🚀 RJ BlocX CLI v1.0.1 - Enhanced Flutter Project Generator');
   print('   Created with ❤️ by Rahul Verma ');
   print('');
   print('COMMANDS:');

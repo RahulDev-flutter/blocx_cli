@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:rj_blocx/src/templates/conditional_module_template.dart';
 
 import '../utils/cli_helpers.dart';
 import '../utils/file_updater_utility.dart';
@@ -505,13 +504,6 @@ class ${CliHelpers.toPascalCase(moduleName)}Repository {
     final hasRepository = config['repository'] == true;
     final hasModels = config['models'] == true;
 
-    final blocImport = hasRepository
-        ? """import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/${CliHelpers.toSnakeCase(moduleName)}_bloc.dart';
-import '../bloc/${CliHelpers.toSnakeCase(moduleName)}_event.dart';
-import '../bloc/${CliHelpers.toSnakeCase(moduleName)}_state.dart';"""
-        : '';
-
     final modelImport = hasModels
         ? "import '../models/${CliHelpers.toSnakeCase(moduleName)}_model.dart';"
         : '';
@@ -524,10 +516,19 @@ import '../bloc/${CliHelpers.toSnakeCase(moduleName)}_state.dart';"""
       hasModels,
     );
 
+    final blocImportWithSl = hasRepository
+        ? """import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../app/service_locator.dart';
+import '../bloc/${CliHelpers.toSnakeCase(moduleName)}_bloc.dart';
+import '../bloc/${CliHelpers.toSnakeCase(moduleName)}_event.dart';
+import '../bloc/${CliHelpers.toSnakeCase(moduleName)}_state.dart';
+$modelImport"""
+        : """import 'package:flutter/material.dart';
+$modelImport""";
+
     return """
-import 'package:flutter/material.dart';
-$blocImport
-$modelImport
+$blocImportWithSl
 
 class ${CliHelpers.toPascalCase(screenName)}Screen extends StatelessWidget {
   const ${CliHelpers.toPascalCase(screenName)}Screen({super.key});
@@ -535,10 +536,10 @@ class ${CliHelpers.toPascalCase(screenName)}Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ${hasRepository ? """BlocProvider(
-      create: (context) => ${CliHelpers.toPascalCase(moduleName)}Bloc()..add(Load${CliHelpers.toPascalCase(moduleName)}List()),
+      create: (context) => sl<${CliHelpers.toPascalCase(moduleName)}Bloc>()..add(Load${CliHelpers.toPascalCase(moduleName)}List()),
       child: """ : ""}Scaffold(
       appBar: AppBar(
-        title: Text('${CliHelpers2.toTitleCase(screenName)}'),
+        title: Text('${CliHelpers.toTitleCase(screenName)}'),
       ),
       body: $screenContent,
     )${hasRepository ? ')' : ''};
@@ -572,8 +573,8 @@ class ${CliHelpers.toPascalCase(screenName)}Screen extends StatelessWidget {
                   Text('Error: \${state.message}'),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<${CliHelpers2.toPascalCase(moduleName)}Bloc>()
-                          .add(Refresh${CliHelpers2.toPascalCase(moduleName)}List());
+                      context.read<${CliHelpers.toPascalCase(moduleName)}Bloc>()
+                          .add(Refresh${CliHelpers.toPascalCase(moduleName)}List());
                     },
                     child: const Text('Retry'),
                   ),
@@ -644,7 +645,7 @@ class ${CliHelpers.toPascalCase(screenName)}Screen extends StatelessWidget {
             Icon(Icons.dashboard, size: 64),
             SizedBox(height: 16),
             Text(
-              '${CliHelpers2.toTitleCase(screenName)}',
+              '${CliHelpers.toTitleCase(screenName)}',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
@@ -710,7 +711,7 @@ class ${CliHelpers.toPascalCase(screenName)}Screen extends StatelessWidget {
             Icon(Icons.dashboard, size: 64),
             SizedBox(height: 16),
             Text(
-              '${CliHelpers2.toTitleCase(screenName)}',
+              '${CliHelpers.toTitleCase(screenName)}',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
